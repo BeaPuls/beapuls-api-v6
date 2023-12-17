@@ -44,6 +44,7 @@
   },
   "dependencies": {
     "@adonisjs/ally": "5.0.0-7",
+    "@adonisjs/auth": "9.0.0-9",
     "@adonisjs/core": "6.1.5-33",
     "@adonisjs/lucid": "19.0.0-6",
     "luxon": "^3.4.4",
