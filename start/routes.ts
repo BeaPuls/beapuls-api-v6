@@ -7,7 +7,9 @@
 |
 */
 
-import router from '@adonisjs/core/services/router'
+import router from '@adonisjs/core/services/router';
+
+const AuthController = () => import('#auth/controllers/auth_controller');
 
 // import HealthCheck from 'Adonis/Core/HealthCheck'
 
@@ -21,5 +23,7 @@ router.get('health', async ({ response }) => {
     //   ? response.ok(report)
     //   : response.badRequest(report)
     response.noContent()
-  })
-  
+})
+
+
+router.get('/signin', [AuthController, 'create'])
