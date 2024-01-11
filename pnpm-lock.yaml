@@ -10,13 +10,19 @@ dependencies:
     version: 5.0.0-7(@adonisjs/core@6.1.5-33)
   '@adonisjs/auth':
     specifier: 9.0.0-9
-    version: 9.0.0-9(@adonisjs/core@6.1.5-33)(@adonisjs/lucid@19.0.0-6)(@japa/plugin-adonisjs@2.0.1)
+    version: 9.0.0-9(@adonisjs/core@6.1.5-33)(@adonisjs/lucid@19.0.0-6)(@adonisjs/session@7.0.0)(@japa/plugin-adonisjs@2.0.1)
   '@adonisjs/core':
     specifier: 6.1.5-33
     version: 6.1.5-33(@adonisjs/assembler@6.1.3-29)
   '@adonisjs/lucid':
     specifier: 19.0.0-6
     version: 19.0.0-6(@adonisjs/assembler@6.1.3-29)(@adonisjs/core@6.1.5-33)(luxon@3.4.4)(pg@8.11.3)
+  '@adonisjs/session':
+    specifier: 7.0.0
+    version: 7.0.0(@adonisjs/core@6.1.5-33)
+  '@poppinss/utils':
+    specifier: ^6.7.0
+    version: 6.7.0
   luxon:
     specifier: ^3.4.4
     version: 3.4.4
@@ -142,7 +148,7 @@ packages:
       ts-morph: 20.0.0
       typescript: 5.2.2
 
-  /@adonisjs/auth@9.0.0-9(@adonisjs/core@6.1.5-33)(@adonisjs/lucid@19.0.0-6)(@japa/plugin-adonisjs@2.0.1):
+  /@adonisjs/auth@9.0.0-9(@adonisjs/core@6.1.5-33)(@adonisjs/lucid@19.0.0-6)(@adonisjs/session@7.0.0)(@japa/plugin-adonisjs@2.0.1):
     resolution: {integrity: sha512-PhuzQz1/EWUVU6jlBHZQvUBnumSTCYI7vykuAC7LdmEBtRj7jTX7IuAqvuemJ5gO3rRKmrOq9x5Ku39heKWVTA==}
     engines: {node: '>=18.16.0'}
     peerDependencies:
@@ -166,6 +172,7 @@ packages:
     dependencies:
       '@adonisjs/core': 6.1.5-33(@adonisjs/assembler@6.1.3-29)
       '@adonisjs/lucid': 19.0.0-6(@adonisjs/assembler@6.1.3-29)(@adonisjs/core@6.1.5-33)(luxon@3.4.4)(pg@8.11.3)
+      '@adonisjs/session': 7.0.0(@adonisjs/core@6.1.5-33)
       '@japa/plugin-adonisjs': 2.0.1(@adonisjs/core@6.1.5-33)(@japa/runner@3.1.1)
       '@poppinss/utils': 6.7.0
       basic-auth: 2.0.1
@@ -421,6 +428,29 @@ packages:
     dependencies:
       '@poppinss/colors': 4.1.2
       string-width: 7.0.0
+
+  /@adonisjs/session@7.0.0(@adonisjs/core@6.1.5-33):
+    resolution: {integrity: sha512-2HadMSWJfAmsHY0HkfEeb2Zrph0vtdkiZqLokNXAGtsCIuScC2GV1okcNkS1qTKhAfloTWybfwMEmJp4fFwuKg==}
+    engines: {node: '>=18.16.0'}
+    peerDependencies:
+      '@adonisjs/core': ^6.2.0
+      '@adonisjs/redis': ^8.0.0
+      '@japa/api-client': ^2.0.2
+      '@japa/browser-client': ^2.0.2
+      edge.js: ^6.0.1
+    peerDependenciesMeta:
+      '@adonisjs/redis':
+        optional: true
+      '@japa/api-client':
+        optional: true
+      '@japa/browser-client':
+        optional: true
+      edge.js:
+        optional: true
+    dependencies:
+      '@adonisjs/core': 6.1.5-33(@adonisjs/assembler@6.1.3-29)
+      '@poppinss/utils': 6.7.0
+    dev: false
 
   /@adonisjs/tsconfig@1.2.0:
     resolution: {integrity: sha512-t+WVXgwf1M2e/33ygt/2coWW3SGEZeAx6oKLuiWXzduobmRskXMNQ5xe1ySpgb5uGt8dErMBf1ad5TgpPPKa8A==}
