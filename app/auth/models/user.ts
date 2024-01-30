@@ -1,5 +1,5 @@
 import hash from '@adonisjs/core/services/hash'
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeSave, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 import { Secret } from '@poppinss/utils'
@@ -13,6 +13,9 @@ export default class User extends BaseModel {
 
   @column()
   declare email:string
+
+  @column({ serializeAs: null })
+  declare password: string
 
   @column({
     prepare: (accessToken: Secret<string>) => accessToken.release(),
@@ -35,6 +38,12 @@ export default class User extends BaseModel {
   @column.dateTime({ autoCreate: true, autoUpdate: true })
   declare updatedAt: DateTime
 
+  @beforeSave()
+  public static async hashPassword (user: User) {
+    if (user.$dirty.password) {
+      user.password = await hash.make(user.password)
+    }
+  }
 
   async verifyPasswordForAuth(plainTextPassword: string): Promise<boolean> {
     return hash.verify(this.password, plainTextPassword)

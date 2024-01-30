@@ -5,7 +5,7 @@ const allyConfig = defineConfig({
   spotify: services.spotify({
     clientId: env.get('SPOTIFY_CLIENT_ID'),
     clientSecret: env.get('SPOTIFY_CLIENT_SECRET'),
-    callbackUrl: 'http://127.0.0.1:3333/signin-callback'
+    callbackUrl: 'http://127.0.0.1:3333/api/spotify/signin-callback'
   })
 })
 

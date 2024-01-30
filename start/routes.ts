@@ -1,3 +1,6 @@
+import { middleware } from '#start/kernel';
+import { HttpContext } from '@adonisjs/core/http';
+import router from '@adonisjs/core/services/router';
 /*
 |--------------------------------------------------------------------------
 | Routes file
@@ -7,19 +10,38 @@
 |
 */
 
-import router from '@adonisjs/core/services/router';
 
 const AuthController = () => import('#auth/controllers/auth_controller');
+const SpotifyController = () => import('#auth/controllers/spotify_controller');
 
 
-router.get('/', async ({response}) => response.ok({uptime: Math.round(process.uptime())}))
+router.get('/', async ({response}: HttpContext) => response.ok({uptime: Math.round(process.uptime())}))
 
 
-router.get('/health', async ({ response }) => {
+router.get('/health', async ({ response }: HttpContext) => {
     response.noContent()
 })
 
+router.group(() => {
+    // Auth - User
+    router.group(() => {
+        router.post('signin', [AuthController, 'create'])
+        router.post('store', [AuthController, 'store'])
+    }).prefix("auth");
+    
+    
+    // Auth - Spotify
+    router.group(() => {
+        router.get('signin', [SpotifyController, 'create'])
+        router.get('signin-callback', [SpotifyController, 'store'])
+        router.post('signout', [SpotifyController, 'destroy'])
+    }).prefix("spotify");
 
-router.get('/signin', [AuthController, 'create'])
-router.get('/signin-callback', [AuthController, 'store'])
+
+    router.group((): void => {
+        // router.get('profile')
+    })
+    .middleware(middleware.auth())
+}).prefix("api");
+
 

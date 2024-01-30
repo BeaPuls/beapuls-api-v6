@@ -1,5 +1,7 @@
+import { Application } from '@adonisjs/core/app'
+import { ExceptionHandler, HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
-import { HttpContext, ExceptionHandler } from '@adonisjs/core/http'
+import { DateTime } from 'luxon'
 
 export default class HttpExceptionHandler extends ExceptionHandler {
   /**
@@ -20,7 +22,54 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * response to the client
    */
   async handle(error: unknown, ctx: HttpContext) {
-    return super.handle(error, ctx)
+    console.log(error);
+    
+    if((error.code === 'E_VALIDATION_ERROR' && error.status === 422) || error.code === "E_VALIDATION_ERROR"){
+      return ctx.response.unprocessableEntity({
+        status: 422,
+        path: ctx.request.url(),
+        timestamp: DateTime.local(),
+        code: 'E_VALIDATION_ERROR',
+        message: error.messages,
+        detail: 'Problem with the data validation'
+      })
+    }
+
+    if((error.code === 'E_AUTHORIZATION_FAILURE' && error.status === 404) || error.code === "E_ROW_NOT_FOUND"){
+      return ctx.response.notFound({
+        status: 404,
+        path: ctx.request.url(),
+        timestamp: DateTime.local(),
+        code: 'E_RESOURCE_NOT_FOUND',
+        message: 'The requested resource was not found',
+        detail: 'Ensure that the resource exists and that you have to correct permissions'
+      })
+    }
+
+    if(error.code === 'E_ROUTE_NOT_FOUND') {
+      return ctx.response.notFound({
+        status: 404,
+        path: ctx.request.url(),
+        timestamp: DateTime.local(),
+        code: 'E_ROUTE_NOT_FOUND',
+        message: 'The requested route was not found',
+        detail: 'Ensure that the route exists'
+      })
+    }
+
+    if(typeof error.handle === 'function') {
+      return error.handle(error, ctx)
+    }
+
+    return ctx.response.internalServerError({
+      status: 500,
+      path: ctx.request.url(),
+      timestamp: DateTime.local(),
+      code: 'E_INTERNAL_SERVER_ERROR',
+      message: 'A internal server error occured'
+    })
+    
+    // return super.handle(error, ctx)
   }
 
   /**
@@ -30,6 +79,13 @@ export default class HttpExceptionHandler extends ExceptionHandler {
    * @note You should not attempt to send a response from this method.
    */
   async report(error: unknown, ctx: HttpContext) {
-    return super.report(error, ctx)
-  }
+    if(this.shouldReport(error) && Application.inDev) {
+      console.log(error);
+      return
+    }
+
+    if(!this.shouldReport(error) || !Application.inProduction)
+      return
+    }
+    // return super.report(error, ctx)
 }

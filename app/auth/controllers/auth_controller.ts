@@ -1,48 +1,39 @@
-import User from "#auth/models/user";
-import { type HttpContext } from "@adonisjs/core/http";
-import { Secret } from "@poppinss/utils";
+import { HttpContext } from "@adonisjs/core/http";
 
 export default class AuthController {
-    create({ally}: HttpContext) {
-        return ally.use('spotify').redirect();
-    }
+  async create({ request, auth }: HttpContext) {
+    // const data = request.body()
+    // const output = await createAuthValidator.validate(data)
+    // const token = await auth.use().attempt(output.email, output.password)
+    // return token
 
 
-    async store({ally, response, auth}: HttpContext) {
-        const spotify = ally.use('spotify')
 
+    // const apiToken = await ApiToken.create(
+    //   {
+    //     userId: user.id,
+    //     accessToken : new Secret(token.accessToken.release()),
+    //     refreshToken : new Secret(token.refreshToken.release())
+    //   }
+    // )
+    
+  }
+    
+  async store({ request, auth, response }: HttpContext) {
+    // const data = request.body()
+    // const output = await storeAuthValidator.validate(data)
 
-        if(spotify.accessDenied()) {
-            return 'Access was denied'
-        }
-
-        if(spotify.stateMisMatch()) {
-            return 'Request expired.try again'
-        }
-
-        if(spotify.hasError()) {
-            return spotify.getError()
-        }
-
-        const spotifyUser = await spotify.user()
-        
-        console.log(spotifyUser)
-
-        const user = await User.updateOrCreate(
-            {
-                spotifyId: spotifyUser.id
-            },
-            {
-                username: spotifyUser.name,
-                email: spotifyUser.email,
-                accessToken: new Secret(spotifyUser.token.token),
-                refreshToken: new Secret(spotifyUser.token.refreshToken)
-            }
-        )
-
-        await auth.use('web').login(user)
-
-        //TODO
-        return response.redirect('/')
-    }
+  
+    // const user = await User.create({
+    //   username: output.username,
+    //   email: output.email,
+    //   password: output.password
+    // })
+    
+    // return response.created({
+    //   status: true,
+    //   data: user.toJSON(),
+    //   message: "User registered successfully !"
+    // })
+  }
 }
