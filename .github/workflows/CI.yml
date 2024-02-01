@@ -37,10 +37,22 @@ jobs:
           # Maps TCP port 5430 on service container to the host
           - 5430:5430
     env:
-      DATABASE_URL_DEV: postgresql://postgres:postgres@localhost:5430/todo-app-dev
-      NODE_ENV: development
+      # DATABASE_URL_DEV: postgresql://postgres:postgres@localhost:5430/todo-app-dev
+      # NODE_ENV: development
+      # PORT: 3333
+      # APP_JWT_SECRET: zKXHe-Ahdb7aPK1ylAJlRgTefktEaACi
+      TZ: UTC
       PORT: 3333
-      APP_JWT_SECRET: zKXHe-Ahdb7aPK1ylAJlRgTefktEaACi
+      HOST: 0.0.0.0
+      LOG_LEVEL: info
+      NODE_ENV: development
+      CACHE_VIEWS: false
+      APP_KEY: zKXHe-Ahdb7aPK1ylAJlRgTefktEaACi
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5430
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: preprod_beapuls
 
     steps:
     - uses: actions/checkout@v3
@@ -49,8 +61,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+    - run: npm install
     - run: npm ci
       # run the migration in the test database
     - run: node ace migration:run
-    - run: npm install
     - run: npm run dev
