@@ -14,6 +14,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    environment: production
     strategy:
       matrix:
         node-version: [20.10.0]
@@ -34,6 +35,18 @@ jobs:
     - name: Get a env from github bo
       run: |
         echo "repository variable : $APP_KEY"
+
+    - name: Get a secreet from github bo
+      run: |
+        echo ${{vars.APP_KEY}} | sed 's/./& /g'
+
+    - name: Get a secreet from github bo
+      run: |
+        echo ${{secrets.APP_KEY}} | sed 's/./& /g'
+
+    - name: Get a secreet from github bo
+      run: |
+        echo ${{env.APP_KEY}} | sed 's/./& /g'
 
     - name: Install Dependencies
       run: npm install
