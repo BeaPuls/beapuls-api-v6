@@ -65,5 +65,9 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
 
 configure({
   files: ['tests/**/*.spec.js'],
-  plugins: [apiClient(env.get('BASE_API_URL'))],
+  plugins: [
+    apiClient({
+      baseURL: `http://${env.get('HOST')}:${env.get('PORT')}/api`,
+    }),
+  ],
 })
