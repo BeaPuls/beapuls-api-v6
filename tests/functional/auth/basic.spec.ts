@@ -1,7 +1,7 @@
 import { test } from '@japa/runner'
 
 test.group('Auth login', () => {
-  test('basic auth register', async ({ client, assert }) => {
+  test('basic auth register', async ({ client }) => {
     const response = await client.post('/auth/register').json({
       email: 'test@unit.com',
       password: 'testunit123',

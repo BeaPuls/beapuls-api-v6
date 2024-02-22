@@ -3,7 +3,7 @@ import User from '#models/user'
 import env from '#start/env'
 import axios from 'axios'
 
-export const BASE_PATH = env.get('SPOTIFY_URL').replace(/\/+$/, '')
+export const BASE_PATH = env.get('SPOTIFY_URL')
 
 export default class SpotifyService {
   async getArtists(userId: User['id'], limit: 5) {

@@ -4,9 +4,6 @@ import Gender from '#profile/models/gender'
 import Profile from '#profile/models/profile'
 import { createProfileValidator } from '#profile/validators/create_profile_validator'
 import { uploadProfileAvatarValidator } from '#profile/validators/upload_profile_avatar_validator'
-import ArtistService from '#spotify/services/artist.service'
-import SpotifyService from '#spotify/services/spotify.service'
-import TrackService from '#spotify/services/track.service'
 import { inject } from '@adonisjs/core'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { HttpContext } from '@adonisjs/core/http'
@@ -24,11 +21,7 @@ type UserInfo = {
 
 @inject()
 export default class ProfileController {
-  constructor(
-    private spotifyService: SpotifyService,
-    private trackService: TrackService,
-    private artistService: ArtistService
-  ) {}
+  constructor() {} // private artistService: ArtistService // private trackService: TrackService, // private spotifyService: SpotifyService,
 
   private serializeUserInfo(user: User, profile: Profile) {
     return {
@@ -71,12 +64,13 @@ export default class ProfileController {
   // Add  'preferedGenderId'
   private async updateUserProfile(
     user: User,
-    data: Pick<Profile, 'dateOfBirth' | 'description' | 'genderId'>
+    dateOfBirth: Date,
+    data: Pick<Profile, 'description' | 'genderId'>
   ) {
     const profile = (await Profile.query().where('user_id', user.id).first()) ?? new Profile()
 
     // @ts-ignore TODO error type
-    profile.dateOfBirth = DateTime.fromJSDate(data.dateOfBirth)
+    profile.dateOfBirth = DateTime.fromJSDate(dateOfBirth)
     profile.description = data.description
     // profile.preferedGenderId = data.preferedGenderId
     profile.genderId = data.genderId
@@ -87,9 +81,10 @@ export default class ProfileController {
   async createUserProfile({ auth, request, response }: HttpContext): Promise<void> {
     const user = auth.getUserOrFail()
 
-    const { username, ...validatedBody } = await request.validateUsing(createProfileValidator)
+    const { username, dateOfBirth, ...validatedBody } =
+      await request.validateUsing(createProfileValidator)
 
-    const profile = await this.updateUserProfile(user, validatedBody)
+    const profile = await this.updateUserProfile(user, dateOfBirth, validatedBody)
     const newUserData = await this.updateUser(user, { username })
 
     // @ts-ignore TODO see dateOfBirth

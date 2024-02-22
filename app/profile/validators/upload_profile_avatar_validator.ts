@@ -1,13 +1,5 @@
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 
-/**
- * Options accepted by the unique rule
- */
-type Options = {
-  table: string
-  column: string
-}
-
 const fields = {
   avatar: 'avatar',
 }
