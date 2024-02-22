@@ -12,9 +12,9 @@
 
 process.env.NODE_ENV = 'test'
 
-import 'reflect-metadata'
 import { Ignitor, prettyPrintError } from '@adonisjs/core'
 import { configure, processCLIArgs, run } from '@japa/runner'
+import 'reflect-metadata'
 
 /**
  * URL to the application root. AdonisJS need it to resolve
@@ -36,7 +36,7 @@ const IMPORTER = (filePath: string) => {
 new Ignitor(APP_ROOT, { importer: IMPORTER })
   .tap((app) => {
     app.booting(async () => {
-      await import('#start/env')
+      await import('../start/env.js')
     })
     app.listen('SIGTERM', () => app.terminate())
     app.listenIf(app.managedByPm2, 'SIGINT', () => app.terminate())

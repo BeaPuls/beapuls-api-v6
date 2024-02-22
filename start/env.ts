@@ -35,5 +35,14 @@ export default await Env.create(new URL('../', import.meta.url), {
   | Variables for configuring session package
   |----------------------------------------------------------
   */
-  SESSION_DRIVER: Env.schema.enum(['cookie', 'memory'] as const)
+  SESSION_DRIVER: Env.schema.enum(['cookie', 'memory'] as const),
+  TZ: Env.schema.enum(['UTC'] as const),
+
+  SPOTIFY_CLIENT_ID: Env.schema.string(),
+  SPOTIFY_CLIENT_SECRET: Env.schema.string(),
+  SPOTIFY_CALLBACK_URL: Env.schema.string.optional({ format: 'url' }),
+  SPOTIFY_SUCCESS_URL: Env.schema.string.optional({ format: 'url' }),
+
+  // project
+  BASE_API_URL: Env.schema.string({ format: 'url' }),
 })

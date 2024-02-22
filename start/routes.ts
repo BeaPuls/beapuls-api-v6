@@ -1,6 +1,6 @@
-import { middleware } from '#start/kernel';
-import { HttpContext } from '@adonisjs/core/http';
-import router from '@adonisjs/core/services/router';
+import { middleware } from '#start/kernel'
+import { HttpContext } from '@adonisjs/core/http'
+import router from '@adonisjs/core/services/router'
 /*
 |--------------------------------------------------------------------------
 | Routes file
@@ -10,38 +10,49 @@ import router from '@adonisjs/core/services/router';
 |
 */
 
+const AuthController = () => import('#auth/controllers/auth.controller')
+const ProfileController = () => import('#profile/controllers/profile_controller')
+const AuthSpotifyController = () => import('#auth/controllers/auth_spotify.controller')
 
-const AuthController = () => import('#auth/controllers/auth_controller');
-const SpotifyController = () => import('#auth/controllers/spotify_controller');
-
-
-router.get('/', async ({response}: HttpContext) => response.ok({uptime: Math.round(process.uptime())}))
-
+router.get('/', async ({ response }: HttpContext) =>
+  response.ok({ uptime: Math.round(process.uptime()) })
+)
 
 router.get('/health', async ({ response }: HttpContext) => {
-    response.noContent()
+  response.noContent()
 })
 
-router.group(() => {
-    // Auth - User
-    router.group(() => {
-        router.post('signin', [AuthController, 'create'])
-        router.post('store', [AuthController, 'store'])
-    }).prefix("auth");
-    
-    
-    // Auth - Spotify
-    router.group(() => {
-        router.get('signin', [SpotifyController, 'create'])
-        router.get('signin-callback', [SpotifyController, 'store'])
-        router.post('signout', [SpotifyController, 'destroy'])
-    }).prefix("spotify");
+router
+  .group(() => {
+    router
+      .group(() => {
+        // Unlogged
+        // Auth - User
+        router.post('login', [AuthController, 'login'])
+        router.post('register', [AuthController, 'register'])
 
+        // Auth - Spotify
+        router.get('spotify', [AuthSpotifyController, 'authorize'])
+        router.get('spotify/callback', [AuthSpotifyController, 'callback'])
 
-    router.group((): void => {
-        // router.get('profile')
-    })
-    .middleware(middleware.auth())
-}).prefix("api");
+        // Others
+        router.get('success', [AuthController, 'success'])
 
-
+        // Logged
+        router
+          .group((): void => {
+            router.post('logout', [AuthController, 'logout'])
+            router.get('profile', [ProfileController, 'getUserInfo'])
+            router.post('profile', [ProfileController, 'createUserProfile'])
+            // router.get('profile/avatar', [ProfileController, 'getUserAvatar'])
+            // router.post('profile/avatar', [ProfileController, 'uploadUserAvatar'])
+          })
+          .use(
+            middleware.auth({
+              guards: ['api'],
+            })
+          )
+      })
+      .prefix('auth')
+  })
+  .prefix('api')
