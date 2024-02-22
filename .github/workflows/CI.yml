@@ -58,9 +58,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
 
-    - name: Install Eslint in globally
-      run: npm i eslint -g
-      
     - name: Install Dependencies
       run: npm install
 
