@@ -27,27 +27,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
-
-    - name: Get a var from github bo
-      run: |
-        echo "repository variable : $APP_KEY"
-
-    - name: Get a env from github bo
-      run: |
-        echo "repository variable : $APP_KEY"
-
-    - name: Get a secreet from github bo
-      run: |
-        echo ${{vars.APP_KEY}} | sed 's/./& /g'
-
-    - name: Get a secreet from github bo
-      run: |
-        echo ${{secrets.APP_KEY}} | sed 's/./& /g'
-
-    - name: Get a secreet from github bo
-      run: |
-        echo ${{env.APP_KEY}} | sed 's/./& /g'
-
     - name: Install Dependencies
       run: npm install
 
@@ -70,10 +49,10 @@ jobs:
         CACHE_VIEWS : false
         DB_HOST : ${{ vars.DB_HOST }}
         DB_PORT : ${{ vars.DB_PORT }}
-        DB_USER :
-        DB_DATABASE :
+        DB_USER : ${{ vars.DB_USER }}
+        DB_DATABASE : ${{ vars.DB_DATABASE }}
         SESSION_DRIVER : cookie
         TZ : UTC
-        SPOTIFY_CLIENT_ID :
-        SPOTIFY_CLIENT_SECRET :
-        BASE_API_URL :
+        SPOTIFY_CLIENT_ID : ${{ vars.SPOTIFY_CLIENT_ID }}
+        SPOTIFY_CLIENT_SECRET :  ${{ vars.SPOTIFY_CLIENT_SECRET }}
+        BASE_API_URL :  ${{ vars.BASE_API_URL }}
