@@ -28,7 +28,7 @@ jobs:
           POSTGRES_USER: ${{ vars.DB_USER }}
           POSTGRES_PASSWORD: ${{ vars.DB_PASSWORD }}
         ports:
-          - ${{ vars.DB_PASSWORD }}:5430
+          - ${{ vars.DB_PORT }}:5430
 
               
     steps:
