@@ -47,12 +47,12 @@ jobs:
       run: npm run test
       env:
         NODE_ENV : production
-        APP_KEY : ${{ secrets.APP_KEY }}
-        HOST : ${{ secrets.HOST }}
+        APP_KEY : ${{ env.APP_KEY }}
+        HOST : ${{ env.HOST }}
         LOG_LEVEL : info
         CACHE_VIEWS : false
-        DB_HOST : ${{ secrets.DB_HOST }}
-        DB_PORT : ${{ secrets.DB_PORT }}
+        DB_HOST : ${{ env.DB_HOST }}
+        DB_PORT : ${{ env.DB_PORT }}
         DB_USER :
         DB_DATABASE :
         SESSION_DRIVER : cookie
