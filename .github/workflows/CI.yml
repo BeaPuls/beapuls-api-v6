@@ -14,21 +14,6 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # env:
-    #   NODE_ENV : production
-      # APP_KEY :
-      # HOST :
-      # LOG_LEVEL :
-      # CACHE_VIEWS :
-      # DB_HOST :
-      # DB_PORT :
-      # DB_USER :
-      # DB_DATABASE :
-      # SESSION_DRIVER :
-      # TZ :
-      # SPOTIFY_CLIENT_ID :
-      # SPOTIFY_CLIENT_SECRET :
-      # BASE_API_URL :
     strategy:
       matrix:
         node-version: [20.10.0]
@@ -55,3 +40,18 @@ jobs:
 
     - name: Run routes tests
       run: npm run test
+      env:
+        NODE_ENV : production
+        APP_KEY :
+        HOST :
+        LOG_LEVEL :
+        CACHE_VIEWS :
+        DB_HOST :
+        DB_PORT :
+        DB_USER :
+        DB_DATABASE :
+        SESSION_DRIVER :
+        TZ :
+        SPOTIFY_CLIENT_ID :
+        SPOTIFY_CLIENT_SECRET :
+        BASE_API_URL :
