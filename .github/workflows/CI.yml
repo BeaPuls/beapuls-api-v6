@@ -27,9 +27,13 @@ jobs:
         node-version: ${{ matrix.node-version }}
 
 
-    - name: Get a secret from github bo
-      run: | 
-        echo ${{secrets.APP_KEY}} | sed 's/./& /g'
+    - name: Get a var from github bo
+      run: |
+        echo "repository variable : $APP_KEY"
+
+    - name: Get a env from github bo
+      run: |
+        echo "repository variable : $APP_KEY"
 
     - name: Install Dependencies
       run: npm install
