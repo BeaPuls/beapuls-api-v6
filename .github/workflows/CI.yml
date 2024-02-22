@@ -18,17 +18,32 @@ jobs:
     strategy:
       matrix:
         node-version: [20.10.0]
+        postgres-version: [14]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
-          
+    services:
+      postgres:
+        image: postgres:${{ matrix.postgres-version }}
+        env:
+          POSTGRES_DB: ${{ vars.DB_DATABASE }}
+          POSTGRES_USER: ${{ vars.DB_USER }}
+          POSTGRES_PASSWORD: ${{ vars.DB_PASSWORD }}
+        ports:
+          - ${{ vars.DB_PASSWORD }}:5430
+
+              
     steps:
     - uses: actions/checkout@v3
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v3
       with:
         node-version: ${{ matrix.node-version }}
+        compose-file: "./docker-compose.yml"
 
-    - name: Run docker postgreSQl
-      run: docker compose up
+    - name: Start Databases
+      run: |
+        echo ---Building and starting up docker---
+        docker-compose -f docker-compose.yml up -d
+        echo ---Containers up---
 
     - name: Install Dependencies
       run: npm install
