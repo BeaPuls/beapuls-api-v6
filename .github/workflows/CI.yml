@@ -35,14 +35,8 @@ jobs:
     - name: Check Formatting
       run: npm run format-check
 
-    - name: Check Ts
+    - name: Check Ts errors
       run: npm run typecheck
-
-    - name: Run migrations db
-      run: node ace migration:run
-
-    - name: Run seeders db
-      run: node ace db:seed
 
     - name: Run routes tests
       run: npm run test
