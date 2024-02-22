@@ -43,7 +43,7 @@ jobs:
       run: npm run test
       env:
         NODE_ENV : production
-        APP_KEY : ${{ vars.APP_KEY }}
+        APP_KEY : ${{ secrets.APP_KEY }}
         HOST : ${{ vars.HOST }}
         LOG_LEVEL : info
         CACHE_VIEWS : false
@@ -54,5 +54,5 @@ jobs:
         SESSION_DRIVER : cookie
         TZ : UTC
         SPOTIFY_CLIENT_ID : ${{ vars.SPOTIFY_CLIENT_ID }}
-        SPOTIFY_CLIENT_SECRET :  ${{ vars.SPOTIFY_CLIENT_SECRET }}
+        SPOTIFY_CLIENT_SECRET :  ${{ secrets.SPOTIFY_CLIENT_SECRET }}
         BASE_API_URL :  ${{ vars.BASE_API_URL }}
