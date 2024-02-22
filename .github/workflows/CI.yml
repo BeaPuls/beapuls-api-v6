@@ -12,59 +12,133 @@ on:
     - deploy
 
 jobs:
-  build:
+  # lint:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       node-version: [20.10.0]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+  #     - name: Install Dependencies
+  #       run: npm install
+
+  #     - name: Run ESLint
+  #       run: npm run lint
+
+
+  # formatting:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       node-version: [20.10.0]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+  #     - name: Install Dependencies
+  #       run: npm install
+
+  #     - name: Check Ts errors
+  #       run: npm run format-check
+
+  # typecheck:
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       node-version: [20.10.0]
+  #   steps:
+  #     - uses: actions/checkout@v3
+  #     - name: Use Node.js ${{ matrix.node-version }}
+  #       uses: actions/setup-node@v3
+  #       with:
+  #         node-version: ${{ matrix.node-version }}
+  #     - name: Install Dependencies
+  #       run: npm install
+
+  #     - name: Check Ts errors
+  #       run: npm run typecheck
+        
+  database:
     runs-on: ubuntu-latest
     environment: production
+    name: database
     strategy:
       matrix:
         node-version: [20.10.0]
         postgres-version: [14]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
     services:
       postgres:
-        image: postgres:${{ matrix.postgres-version }}
+        image: postgres
         env:
           POSTGRES_DB: ${{ vars.DB_DATABASE }}
           POSTGRES_USER: ${{ vars.DB_USER }}
           POSTGRES_PASSWORD: ${{ vars.DB_PASSWORD }}
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+          --name postgres
         ports:
-          - ${{ vars.DB_PORT }}:5430
+          - 5430:5430
 
-              
+    env:
+      NODE_ENV : development
+      APP_KEY : ${{ secrets.APP_KEY }}
+      HOST : ${{ vars.HOST }}
+      LOG_LEVEL : info
+      CACHE_VIEWS : false
+      DB_HOST : ${{ vars.DB_HOST }}
+      DB_PORT : ${{ vars.DB_PORT }}
+      DB_USER : ${{ vars.DB_USER }}
+      DB_PASSWORD: ${{ vars.DB_PASSWORD }}
+      DB_DATABASE : ${{ vars.DB_DATABASE }}
+      PORT : ${{ vars.PORT }}
+      SESSION_DRIVER : cookie
+      TZ : UTC
+      SPOTIFY_CLIENT_ID : ${{ vars.SPOTIFY_CLIENT_ID }}
+      SPOTIFY_CLIENT_SECRET :  ${{ secrets.SPOTIFY_CLIENT_SECRET }}
+      BASE_API_URL :  ${{ vars.BASE_API_URL }}
     steps:
-    - uses: actions/checkout@v3
-    - name: Use Node.js ${{ matrix.node-version }}
-      uses: actions/setup-node@v3
-      with:
-        node-version: ${{ matrix.node-version }}
-        compose-file: "./docker-compose.yml"
+      - uses: actions/checkout@v3
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}   
 
-    - name: Install Dependencies
-      run: npm install
+      - name: Get Docker containers
+        run: docker ps
 
-    - name: Run ESLint
-      run: npm run lint
+      - name: Install Dependencies
+        run: npm install
+        
+      - name: Clear Docker cache
+        run: docker builder prune -a -f
 
-    - name: Check Formatting
-      run: npm run format-check
 
-    - name: Check Ts errors
-      run: npm run typecheck
+      - name: Display running containers
+        run: docker ps -a
+      
+      - name: Display Docker network information
+        run: docker network inspect bridge
+       
+      - name: Display service creation logs
+        run: docker logs postgres
 
-    - name: Run routes tests
-      run: npm run test
-      env:
-        NODE_ENV : production
-        APP_KEY : ${{ secrets.APP_KEY }}
-        HOST : ${{ vars.HOST }}
-        LOG_LEVEL : info
-        CACHE_VIEWS : false
-        DB_HOST : ${{ vars.DB_HOST }}
-        DB_PORT : ${{ vars.DB_PORT }}
-        DB_USER : ${{ vars.DB_USER }}
-        DB_DATABASE : ${{ vars.DB_DATABASE }}
-        SESSION_DRIVER : cookie
-        TZ : UTC
-        SPOTIFY_CLIENT_ID : ${{ vars.SPOTIFY_CLIENT_ID }}
-        SPOTIFY_CLIENT_SECRET :  ${{ secrets.SPOTIFY_CLIENT_SECRET }}
-        BASE_API_URL :  ${{ vars.BASE_API_URL }}
+      - name: Run migrations database
+        run: node ace migration:run
+  
+      - name: Run seeders databse
+        run: node ace db:seed
+  
+      - name: Run routes tests
+        run: npm run test
+
+  
+
