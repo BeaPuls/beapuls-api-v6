@@ -13,8 +13,10 @@
 process.env.NODE_ENV = 'test'
 
 import { Ignitor, prettyPrintError } from '@adonisjs/core'
+import { apiClient } from '@japa/api-client'
 import { configure, processCLIArgs, run } from '@japa/runner'
 import 'reflect-metadata'
+import env from '../start/env.js'
 
 /**
  * URL to the application root. AdonisJS need it to resolve
@@ -60,3 +62,8 @@ new Ignitor(APP_ROOT, { importer: IMPORTER })
     process.exitCode = 1
     prettyPrintError(error)
   })
+
+configure({
+  files: ['tests/**/*.spec.js'],
+  plugins: [apiClient(env.get('BASE_API_URL'))],
+})
