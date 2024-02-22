@@ -40,6 +40,7 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   SPOTIFY_CLIENT_ID: Env.schema.string(),
   SPOTIFY_CLIENT_SECRET: Env.schema.string(),
+  SPOTIFY_URL: Env.schema.string.optional({ format: 'url' }),
   SPOTIFY_CALLBACK_URL: Env.schema.string.optional({ format: 'url' }),
   SPOTIFY_SUCCESS_URL: Env.schema.string.optional({ format: 'url' }),
 

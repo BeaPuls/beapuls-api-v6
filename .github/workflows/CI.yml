@@ -26,6 +26,11 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
 
+
+    - name: Get a secret from github bo
+      run: | 
+        echo ${{secrets.APP_KEY}} | sed 's/./& /g'
+
     - name: Install Dependencies
       run: npm install
 
@@ -42,16 +47,16 @@ jobs:
       run: npm run test
       env:
         NODE_ENV : production
-        APP_KEY :
-        HOST :
-        LOG_LEVEL :
-        CACHE_VIEWS :
-        DB_HOST :
-        DB_PORT :
+        APP_KEY : ${{ secrets.APP_KEY }}
+        HOST : ${{ secrets.HOST }}
+        LOG_LEVEL : info
+        CACHE_VIEWS : false
+        DB_HOST : ${{ secrets.DB_HOST }}
+        DB_PORT : ${{ secrets.DB_PORT }}
         DB_USER :
         DB_DATABASE :
-        SESSION_DRIVER :
-        TZ :
+        SESSION_DRIVER : cookie
+        TZ : UTC
         SPOTIFY_CLIENT_ID :
         SPOTIFY_CLIENT_SECRET :
         BASE_API_URL :
