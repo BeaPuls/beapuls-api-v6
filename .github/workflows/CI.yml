@@ -14,8 +14,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    env:
-      NODE_ENV : production
+    # env:
+    #   NODE_ENV : production
       # APP_KEY :
       # HOST :
       # LOG_LEVEL :
