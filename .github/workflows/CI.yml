@@ -1,0 +1,81 @@
+# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
+
+name: Checks CI
+
+on:
+  push:
+    branches:
+    - CI
+  pull_request:
+    branches:
+    - CI
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.10.0]
+        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        
+    services:
+      # Label used to access the service container
+      postgres:
+        # Docker Hub image
+        image: postgres
+        # Provide the password for postgres
+        env:
+          POSTGRES_USER: root
+          POSTGRES_PASSWORD: root
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          # Maps TCP port 5430 on service container to the host
+          - 5430:5430
+    env:
+      TZ: UTC
+      PORT: 3333
+      HOST: 0.0.0.0
+      LOG_LEVEL: info
+      NODE_ENV: production
+      CACHE_VIEWS: false
+      APP_KEY: zKXHe-Ahdb7aPK1ylAJlRgTefktEaACi
+      DB_HOST: 127.0.0.1
+      DB_PORT: 5430
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_DATABASE: preprod_beapuls
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v3
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+
+    - name: Install Dependencies
+      run: npm install
+
+
+    - name: Run Lint
+      run: npm run lint
+
+    - name: Check Formatting
+      run: npm run format-check
+
+    - name: Check Ts
+      run: npm run typecheck
+
+    - name: Run migrations db
+      run: node ace migration:run
+
+    - name: Run seeders db
+      run: node ace db:seed
+
+    - name: Run routes tests
+      run: npm run test
