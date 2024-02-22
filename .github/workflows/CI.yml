@@ -61,8 +61,7 @@ jobs:
     - name: Install Dependencies
       run: npm install
 
-
-    - name: Run Lint
+    - name: Run ESLint
       run: npm run lint
 
     - name: Check Formatting
