@@ -14,12 +14,25 @@ const AuthController = () => import('#auth/controllers/auth.controller')
 const ProfileController = () => import('#profile/controllers/profile_controller')
 const AuthSpotifyController = () => import('#auth/controllers/auth_spotify.controller')
 
+import { trace } from '@opentelemetry/api'
+
 router.get('/', async ({ response }: HttpContext) =>
   response.ok({ uptime: Math.round(process.uptime()) })
 )
 
 router.get('/health', async ({ response }: HttpContext) => {
   response.noContent()
+})
+
+// Tracer data
+const name = 'beapuls-api'
+const version = '1.0.0'
+const tracer = trace.getTracer(name, version)
+
+router.get('/trace', async ({ response }: HttpContext) => {
+  const span = tracer.startSpan('cal /trace route api')
+  console.log(span)
+  span.end()
 })
 
 router
