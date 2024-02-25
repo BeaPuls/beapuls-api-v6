@@ -13,6 +13,6 @@ on:
 
 jobs:
   ci:
-    uses: ./.github/workflows/CI
+    uses: ./.github/workflows/CI.yml
   cdelivery:
-    uses: ./.github/workflows/CDeployment
+    uses: ./.github/workflows/CDeployment.yml
