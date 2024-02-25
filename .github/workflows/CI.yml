@@ -68,7 +68,7 @@ jobs:
         run: npm run typecheck
         
   database:
-    name: Tests
+    name: Database
     runs-on: ubuntu-latest
     needs: [lint, formatting, typecheck]
     environment: production
