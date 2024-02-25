@@ -4,7 +4,12 @@
 name: Checks CI
 
 on:
-  workflow_dispatch:
+  push:
+    branches:
+    - deploy
+  pull_request:
+    branches:
+    - deploy
 
 jobs:
   lint:
@@ -138,6 +143,3 @@ jobs:
   
       - name: Run routes tests
         run: npm run test
-
-  
-

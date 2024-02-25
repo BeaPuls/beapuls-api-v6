@@ -6,10 +6,13 @@ name: Checks CDelivery
 on:
   workflow_dispatch:
 
-
 jobs:
-  build:
-    name: Deploy
+  release:
+    name: Release
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -25,9 +28,7 @@ jobs:
       - name: Build for Production
         run: npm run build
 
-      - name: Upload Package to GitHub Releases
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/*.tgz
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Create a GitHub Releases
+        run: npx semantic-release
+        # env:
+        #   GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
