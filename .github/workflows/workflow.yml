@@ -12,7 +12,12 @@ on:
     - deploy
 
 jobs:
+  workflow:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [20.10.0]
   ci:
-    uses: CI.yml
+    uses: /BeaPuls/beapuls-api-v6/.github/workflows/CI.yml@deploy
   cdelivery:
-    uses: CDDelivery.yml
+    uses: /BeaPuls/beapuls-api-v6/.github/workflows/CDeployment.yml@deploy
