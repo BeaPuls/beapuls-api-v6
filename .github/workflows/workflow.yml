@@ -18,6 +18,6 @@ jobs:
       matrix:
         node-version: [20.10.0]
   ci:
-    uses: /BeaPuls/beapuls-api-v6/.github/workflows/CI.yml@deploy
+    uses: ./.github/workflows/CI.yml@deploy
   cdelivery:
-    uses: /BeaPuls/beapuls-api-v6/.github/workflows/CDeployment.yml@deploy
+    uses: ./.github/workflows/CDeployment.yml@deploy
