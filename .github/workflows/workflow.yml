@@ -13,6 +13,6 @@ on:
 
 jobs:
   ci:
-    uses: /beapuls-api-v6/.github/workflows/CI.yml@deploy
+    uses: ./.github/workflows/CI
   cdelivery:
-    uses: /beapuls-api-v6/.github/workflows/CDeployment.yml@deploy
+    uses: ./.github/workflows/CDeployment
