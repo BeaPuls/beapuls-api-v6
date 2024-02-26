@@ -4,7 +4,10 @@
 name: Checks CDelivery
 
 on:
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["Checks CI"]
+    types:
+      - completed
 
 jobs:
   release:
