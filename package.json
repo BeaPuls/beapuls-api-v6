@@ -83,7 +83,7 @@
       [
         "@semantic-release/github",
         {
-          "assets": [
+          "publish": [
             "build/**"
           ]
         }
