@@ -32,7 +32,8 @@ jobs:
       - name: Get latest tag
         shell: bash
         id: get_tag
-        run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
+        run: echo "${GITHUB_REF#refs/tags/}"
+        # run: echo "::set-output name=tag::${GITHUB_REF#refs/tags/}"
   
       - name: Create new release
         id: create_release
