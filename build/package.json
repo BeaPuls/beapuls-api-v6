@@ -40,11 +40,6 @@
     "@japa/assert": "^2.1.0",
     "@japa/plugin-adonisjs": "^3.0.0",
     "@japa/runner": "^3.1.1",
-    "@semantic-release/commit-analyzer": "^11.1.0",
-    "@semantic-release/git": "^10.0.1",
-    "@semantic-release/github": "^9.2.6",
-    "@semantic-release/npm": "^11.0.2",
-    "@semantic-release/release-notes-generator": "^12.1.0",
     "@swc/core": "^1.3.105",
     "@types/luxon": "^3.4.2",
     "@types/node": "^20.11.6",
@@ -77,29 +72,6 @@
   "release": {
     "branches": [
       "deploy"
-    ],
-    "files": [
-      "build/**"
-    ],
-    "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      [
-        "@semantic-release/github",
-        {
-          "assets": [
-            "build/**"
-          ]
-        }
-      ],
-      [
-        "@semantic-release/npm",
-        {
-          "pkgRoot": "build"
-        }
-      ],
-      "@semantic-release/git"
-    ],
-    "preset": "angular"
+    ]
   }
 }
