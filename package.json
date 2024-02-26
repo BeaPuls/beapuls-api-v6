@@ -79,16 +79,10 @@
       "deploy"
     ],
     "plugins": [
-      "@semantic-release/commit-analyzer",
-      "@semantic-release/release-notes-generator",
-      [
-        "@semantic-release/npm",
-        {
-          "pkgRoot": "build"
-        }
-      ],
-      "@semantic-release/git"
-    ],
-    "preset": "angular"
+      "@semantic-release/npm",
+      {
+        "pkgRoot": "build"
+      }
+    ]
   }
 }
