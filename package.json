@@ -84,8 +84,6 @@
       [
         "@semantic-release/npm",
         {
-          "npmPublish": false,
-          "tarballDir": "build",
           "pkgRoot": "build"
         }
       ],
