@@ -20,26 +20,30 @@ jobs:
     environment: production
     steps:
       - uses: actions/checkout@v2
+        name: Use Node.js ${{ matrix.node-version }}
         with: 
           fetch-depth: 0  # Fetch all history to get tags
           ref: deploy  
-        name: Use Node.js ${{ matrix.node-version }}
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
+      - 
+        name: Install Dependencies
         run: npm install
       
-      - name: Build for Production
+      - 
+        name: Build for Production
         run: npm run build && zip -r build.zip build
 
-      - name: Get latest tag
+      - 
+        name: Get latest tag
         shell: bash
         id: get_tag
         run: echo "::set-output name=TAG_NAME::$(git describe --tags $(git rev-list --tags --max-count=1))"
 
-      - name: Create new release
+      - 
+        name: Create new release
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -52,7 +56,8 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload release asset 
+      - 
+        name: Upload release asset 
         id: upload_release
         uses: actions/upload-release-asset@v1
         env:

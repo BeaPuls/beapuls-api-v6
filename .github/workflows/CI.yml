@@ -19,15 +19,18 @@ jobs:
         node-version: [20.10.0]
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - 
+        name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
           
-      - name: Install Dependencies
+      - 
+        name: Install Dependencies
         run: npm install
 
-      - name: Run ESLint
+      - 
+        name: Run ESLint
         run: npm run lint
 
 
@@ -39,15 +42,18 @@ jobs:
         node-version: [20.10.0]
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - 
+        name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
   
-      - name: Install Dependencies
+      - 
+        name: Install Dependencies
         run: npm install
 
-      - name: Check Ts errors
+      - 
+        name: Check Ts errors
         run: npm run format-check
 
   typecheck:
@@ -58,15 +64,18 @@ jobs:
         node-version: [20.10.0]
     steps:
       - uses: actions/checkout@v3
-      - name: Use Node.js ${{ matrix.node-version }}
+      - 
+        name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
+      - 
+        name: Install Dependencies
         run: npm install
 
-      - name: Check Ts errors
+      - 
+        name: Check Ts errors
         run: npm run typecheck
         
   database:
@@ -114,7 +123,8 @@ jobs:
       BASE_API_URL :  ${{ vars.BASE_API_URL }}
     steps:
       - uses: actions/checkout@v4
-      - name: Use Node.js ${{ matrix.node-version }}
+      - 
+        name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node-version }}   
@@ -134,14 +144,18 @@ jobs:
       # - name: Get Docker containers
       #   run: docker ps
 
-      - name: Install Dependencies
+      - 
+        name: Install Dependencies
         run: npm install
         
-      - name: Run migrations database
+      - 
+        name: Run migrations database
         run: node ace migration:run
   
-      - name: Run seeders databse
+      - 
+        name: Run seeders databse
         run: node ace db:seed
   
-      - name: Run routes tests
+      - 
+        name: Run routes tests
         run: npm run test
