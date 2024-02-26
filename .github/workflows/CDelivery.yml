@@ -32,6 +32,10 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
+      
+      - name: Build for Production
+        run: npm run build
+
       - name: Get latest tag
         shell: bash
         id: get_tag
