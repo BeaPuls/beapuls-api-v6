@@ -6,7 +6,7 @@
   "license": "UNLICENSED",
   "scripts": {
     "start": "node bin/server.js",
-    "build": "node ace build && git add -A build",
+    "build": "node ace build",
     "dev": "node ace serve --watch",
     "test": "node ace test",
     "lint": "eslint . --ext=.ts",
@@ -14,6 +14,7 @@
     "format-check": "prettier --check './**/*.{js,jsx,ts,tsx,json,css,md}'",
     "typecheck": "tsc --noEmit",
     "seed:dev": "NODE_ENV=development node ace db:seed",
+    "version": "npm run build && git add -A build",
     "postversion": "git push origin deploy && git push --tags"
   },
   "imports": {

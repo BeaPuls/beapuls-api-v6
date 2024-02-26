@@ -14,7 +14,7 @@
     "format-check": "prettier --check './**/*.{js,jsx,ts,tsx,json,css,md}'",
     "typecheck": "tsc --noEmit",
     "seed:dev": "NODE_ENV=development node ace db:seed",
-    "preversion": "npm run build && git add -A build",
+    "version": "npm run build && git add -A build",
     "postversion": "git push origin deploy && git push --tags"
   },
   "imports": {
