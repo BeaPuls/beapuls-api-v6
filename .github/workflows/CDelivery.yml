@@ -33,6 +33,6 @@ jobs:
         run: npm run build
 
       - name: Create a GitHub Releases
-        run: npx semantic-release
+        run: cd dist && npx semantic-release
         env:
           GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
