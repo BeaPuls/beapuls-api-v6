@@ -84,7 +84,7 @@
       [
         "@semantic-release/github",
         {
-          "assets": "dist/*.tgz"
+          "assets": "build/*.tgz"
         }
       ],
       [
