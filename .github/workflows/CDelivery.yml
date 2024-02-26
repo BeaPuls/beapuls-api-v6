@@ -32,7 +32,6 @@ jobs:
       - name: Build for Production
         run: npm run build
 
-      - name: Create a GitHub Releases
-        run: npx semantic-release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+      # - name: Create a GitHub Releases
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
