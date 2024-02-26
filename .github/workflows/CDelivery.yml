@@ -22,10 +22,13 @@ jobs:
         node-version: [20.10.0]
     environment: production
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
+        uses: actions/checkout@v2
+        with: 
+            fetch-depth: 0  # Fetch all history to get tags
+            ref: deploy  
+      - uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
