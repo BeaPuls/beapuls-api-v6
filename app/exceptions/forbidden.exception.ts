@@ -13,7 +13,7 @@ import { Exception } from '@adonisjs/core/exceptions'
 | new UnAuthorizedException('message', 500, 'E_RUNTIME_EXCEPTION')
 |
 */
-export default class ForbidanException extends Exception {
+export default class ForbiddenException extends Exception {
   constructor(message?: string, code?: string) {
     super(message ?? ErrorCode.FORBIDDEN, {
       status: 403,

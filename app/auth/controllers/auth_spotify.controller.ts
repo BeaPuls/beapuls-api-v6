@@ -96,13 +96,13 @@ export default class SpotifyController {
   }
 
   private async generateUserToken(user: User): Promise<AccessToken> {
+    console.log(user)
+
     return User.accessTokens.create(user)
   }
 
   private async initializeUserData(profileId: string, userId: string) {
     const trackExist = await Track.query().where('profile_id', userId)
-    console.log(trackExist.length)
-    console.log(profileId)
 
     if (!trackExist.length) {
       const topTracks = await this.spotifyService.getTracks(userId, 5)

@@ -25,19 +25,6 @@ export default class AuthController {
 
     const user = await User.create(payload)
 
-    // console.log(payload.password);
-    // const user = await User.verifyCredentials(payload.email, payload.password)
-    // console.log(user);
-    // const token = await User.accessTokens.create(user)
-
-    // console.log(token);
-
-    // if (!token) {
-    //   return response.badRequest({
-    //     status: true,
-    //     message: 'Unable to log in',
-    //   })
-    // }
     return response.created({
       status: true,
       data: {

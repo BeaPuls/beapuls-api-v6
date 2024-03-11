@@ -44,14 +44,24 @@ router
             router.post('logout', [AuthController, 'logout'])
             router.get('profile', [ProfileController, 'getUserInfo'])
             router.post('profile', [ProfileController, 'createUserProfile'])
-            // router.get('profile/avatar', [ProfileController, 'getUserAvatar'])
-            // router.post('profile/avatar', [ProfileController, 'uploadUserAvatar'])
+            router.get('profile/avatar', [ProfileController, 'getUserAvatar'])
+            router.post('profile/avatar', [ProfileController, 'uploadUserAvatar'])
           })
           .use(
             middleware.auth({
               guards: ['api'],
             })
           )
+
+        // router
+        //   .group(() => {
+        //     router.get('/users', [ProfileController, 'getProfiles'])
+        //   })
+        //   .use(
+        //     middleware.auth({
+        //       guards: ['api'],
+        //     })
+        //   )
       })
       .prefix('auth')
   })

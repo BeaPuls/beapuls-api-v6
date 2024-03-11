@@ -9,6 +9,7 @@ import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import { DateTime } from 'luxon'
+// import UserService from '../../user/services/user.service.js'
 
 type UserInfo = {
   id: number | string
@@ -21,7 +22,7 @@ type UserInfo = {
 
 @inject()
 export default class ProfileController {
-  constructor() {} // private artistService: ArtistService // private trackService: TrackService, // private spotifyService: SpotifyService,
+  // constructor(private userService: UserService) {} // private artistService: ArtistService // private trackService: TrackService, // private spotifyService: SpotifyService,
 
   private serializeUserInfo(user: User, profile: Profile) {
     return {
@@ -55,6 +56,20 @@ export default class ProfileController {
       },
     })
   }
+
+  // async getProfiles({ auth }: HttpContext) {
+  //   const authUser = auth.getUserOrFail()
+  //   const user = await User.query().where('id', authUser.id).preload('profile').first()
+  //   const userProfile = user?.profile
+  //   if (!userProfile) {
+  //     throw new ForbiddenException(ErrorMessage.PROFILE_NOT_SET)
+  //   }
+
+  //   const data = await this.userService.getProfilesToShowForProfile(userProfile)
+  //   return {
+  //     data,
+  //   }
+  // }
 
   private async updateUser(user: User, data: Pick<User, 'username'>) {
     user.username = data.username
@@ -127,8 +142,13 @@ export default class ProfileController {
 
   async getUserAvatar({ auth, response }: HttpContext): Promise<void> {
     const user = auth.getUserOrFail()
-    const avatar = user.profile.avatar
 
+    const profile = await Profile.query().where('user_id', user.id).first()
+    if (!profile) {
+      throw new NotFountException()
+    }
+
+    const avatar = profile?.avatar
     if (!avatar) {
       throw new NotFountException()
     }
