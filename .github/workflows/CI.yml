@@ -53,7 +53,7 @@ jobs:
         run: npm install
 
       - 
-        name: Check Ts errors
+        name: Check Prettier errors
         run: npm run format-check
 
   typecheck:
