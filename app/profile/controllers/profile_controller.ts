@@ -8,6 +8,7 @@ import { inject } from '@adonisjs/core'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
+import console from 'console'
 import { DateTime } from 'luxon'
 // import UserService from '../../user/services/user.service.js'
 
@@ -40,9 +41,10 @@ export default class ProfileController {
     }
   }
 
-  async getUserInfo({ auth, response }: HttpContext) {
+  async getUserProfile({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
 
+    console.log('user', user)
     const profile = await Profile.query().where('user_id', user.id).first()
     if (!profile) {
       throw new NotFountException()

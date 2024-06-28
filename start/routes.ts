@@ -13,6 +13,7 @@ import router from '@adonisjs/core/services/router'
 const AuthController = () => import('#auth/controllers/auth.controller')
 const ProfileController = () => import('#profile/controllers/profile_controller')
 const AuthSpotifyController = () => import('#auth/controllers/auth_spotify.controller')
+const SpotifyController = () => import('#spotify/controllers/spotify.controller')
 
 router.get('/', async ({ response }: HttpContext) =>
   response.ok({ uptime: Math.round(process.uptime()) })
@@ -42,27 +43,36 @@ router
         router
           .group((): void => {
             router.post('logout', [AuthController, 'logout'])
-            router.get('profile', [ProfileController, 'getUserInfo'])
-            router.post('profile', [ProfileController, 'createUserProfile'])
-            router.get('profile/avatar', [ProfileController, 'getUserAvatar'])
-            router.post('profile/avatar', [ProfileController, 'uploadUserAvatar'])
           })
           .use(
             middleware.auth({
               guards: ['api'],
             })
           )
-
-        // router
-        //   .group(() => {
-        //     router.get('/users', [ProfileController, 'getProfiles'])
-        //   })
-        //   .use(
-        //     middleware.auth({
-        //       guards: ['api'],
-        //     })
-        //   )
       })
       .prefix('auth')
+
+    router
+      .group(() => {
+        router
+          .group(() => {
+            router.get('profile', [ProfileController, 'getUserProfile'])
+            router.post('profile', [ProfileController, 'createUserProfile'])
+            router.get('profile/avatar', [ProfileController, 'getUserAvatar'])
+            router.post('profile/avatar', [ProfileController, 'uploadUserAvatar'])
+          })
+          .prefix('user')
+
+        router
+          .group(() => {
+            router.get('search', [SpotifyController, 'search'])
+          })
+          .prefix('spotify')
+      })
+      .use(
+        middleware.auth({
+          guards: ['api'],
+        })
+      )
   })
   .prefix('api')

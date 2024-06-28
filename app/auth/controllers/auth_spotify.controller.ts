@@ -29,6 +29,7 @@ export default class SpotifyController {
 
   async useSpotify(ally: AllyService) {
     const spotify = ally.use('spotify').stateless()
+
     /**
      * User has explicitly denied the login request
      */
@@ -45,7 +46,6 @@ export default class SpotifyController {
      * There was an unknown error during the redirect
      */
     if (spotify.hasError()) {
-      console.log('useSpotify : ', spotify.getError())
       throw new Exception('something went wrong with provider')
     }
 
@@ -58,6 +58,7 @@ export default class SpotifyController {
 
   async callback({ ally, response }: HttpContext) {
     const { token, email, id: providerUserId, nickName, avatarUrl } = await this.useSpotify(ally)
+
     const user = await User.firstOrCreate(
       {
         email: email as string,
@@ -96,8 +97,6 @@ export default class SpotifyController {
   }
 
   private async generateUserToken(user: User): Promise<AccessToken> {
-    console.log(user)
-
     return User.accessTokens.create(user)
   }
 

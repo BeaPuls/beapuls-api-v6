@@ -13,7 +13,7 @@
 
 Install the dependencies
 
-```
+```bash
 npm i
 ```
 
@@ -21,7 +21,7 @@ npm i
 
 Star database
 
-```
+```bash
 docker compose up
 ```
 
@@ -29,7 +29,7 @@ docker compose up
 
 Run database migrations
 
-```
+```bash
 node ace migration:run
 ```
 
@@ -37,7 +37,7 @@ node ace migration:run
 
 Run database seeders
 
-```
+```bash
 node ace db:seed
 ```
 
@@ -45,6 +45,15 @@ node ace db:seed
 
 Run server
 
-```
+```bash
 npm run dev
 ```
+
+## Utils 
+
+List all routes of API
+
+```bash
+node ace route:list
+```
+
