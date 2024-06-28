@@ -65,7 +65,6 @@ export default class SpotifyController {
       },
       {
         email: email as string,
-        username: nickName as string,
       }
     )
     await AuthProviders.updateOrCreate(
@@ -82,7 +81,7 @@ export default class SpotifyController {
         providerUserId,
       }
     )
-    const profile = await this.profileService.createUserProfile(user, avatarUrl)
+    const profile = await this.profileService.createUserProfile(user, avatarUrl, nickName)
 
     this.initializeUserData(profile.id, user.id)
     const authToken = await this.generateUserToken(user)

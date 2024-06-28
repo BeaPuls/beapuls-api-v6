@@ -4,7 +4,7 @@ import { inject } from '@adonisjs/fold'
 
 @inject()
 export default class ProfileService {
-  async createUserProfile(user: User, avatarUrl: string) {
+  async createUserProfile(user: User, avatarUrl: string, username: string) {
     const newProfile = Profile.updateOrCreate(
       {
         userId: user.id,
@@ -12,6 +12,7 @@ export default class ProfileService {
       {
         userId: user.id,
         avatar: avatarUrl,
+        username: username,
       }
     )
 
