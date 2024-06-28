@@ -6,7 +6,7 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-
+      table.string('username').nullable().unique()
       table.date('date_of_birth').nullable()
       table.text('description').nullable()
       table.text('avatar').nullable()

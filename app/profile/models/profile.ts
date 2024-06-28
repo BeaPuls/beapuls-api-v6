@@ -17,6 +17,9 @@ export default class Profile extends BaseModel {
   @column({ isPrimary: true })
   declare id: string
 
+  @column()
+  declare username: string
+
   @column.date({ autoCreate: false, autoUpdate: false, serializeAs: 'dateOfBirth' })
   declare dateOfBirth: DateTime
 

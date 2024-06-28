@@ -50,7 +50,6 @@ vine.messagesProvider = new SimpleMessagesProvider(
 
 export const registerAuthValidator = vine.compile(
   vine.object({
-    username: vine.string().use(uniqueRule({ table: 'users', column: 'username' })),
     email: vine
       .string()
       .email()

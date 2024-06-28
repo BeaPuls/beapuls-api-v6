@@ -1,4 +1,4 @@
-import User from '#auth/models/user'
+import Profile from '#profile/models/profile'
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 import { FieldContext } from '@vinejs/vine/types'
 
@@ -31,9 +31,9 @@ async function unique(value: unknown, options: Options, field: FieldContext) {
     return
   }
 
-  const user = await User.findBy(options.column, value)
+  const profile = await Profile.findBy(options.column, value)
 
-  if (user) {
+  if (profile) {
     field.report('The {{ field }} field is not unique', 'unique', field)
   }
 }
@@ -52,7 +52,7 @@ vine.messagesProvider = new SimpleMessagesProvider(
 
 export const createProfileValidator = vine.compile(
   vine.object({
-    username: vine.string().use(uniqueRule({ table: 'users', column: 'username' })),
+    username: vine.string().use(uniqueRule({ table: 'profiles', column: 'username' })),
     dateOfBirth: vine.date({ formats: ['YYYY-MM-DD'] }),
     description: vine.string(),
     // preferedGenderId: vine.number(),

@@ -8,7 +8,6 @@ import { inject } from '@adonisjs/core'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
-import console from 'console'
 import { DateTime } from 'luxon'
 // import UserService from '../../user/services/user.service.js'
 
@@ -29,7 +28,7 @@ export default class ProfileController {
     return {
       id: profile.id,
       userId: user.id,
-      username: user.username,
+      username: profile.username,
       avatar: profile.avatar,
       dateOfBirth: profile.dateOfBirth,
       description: profile.description,
@@ -44,7 +43,6 @@ export default class ProfileController {
   async getUserProfile({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
 
-    console.log('user', user)
     const profile = await Profile.query().where('user_id', user.id).first()
     if (!profile) {
       throw new NotFountException()
@@ -73,20 +71,21 @@ export default class ProfileController {
   //   }
   // }
 
-  private async updateUser(user: User, data: Pick<User, 'username'>) {
-    user.username = data.username
-    return user.save()
-  }
+  // private async updateUser(user: User, data: Pick<User, 'username'>) {
+  //   user.username = data.username
+  //   return user.save()
+  // }
 
   // Add  'preferedGenderId'
   private async updateUserProfile(
     user: User,
     dateOfBirth: Date,
-    data: Pick<Profile, 'description' | 'genderId'>
+    data: Pick<Profile, 'username' | 'description' | 'genderId'>
   ) {
     const profile = (await Profile.query().where('user_id', user.id).first()) ?? new Profile()
 
     // @ts-ignore TODO error type
+    profile.username = data.username
     profile.dateOfBirth = DateTime.fromJSDate(dateOfBirth)
     profile.description = data.description
     // profile.preferedGenderId = data.preferedGenderId
@@ -98,14 +97,13 @@ export default class ProfileController {
   async createUserProfile({ auth, request, response }: HttpContext): Promise<void> {
     const user = auth.getUserOrFail()
 
-    const { username, dateOfBirth, ...validatedBody } =
-      await request.validateUsing(createProfileValidator)
+    const { dateOfBirth, ...validatedBody } = await request.validateUsing(createProfileValidator)
 
     const profile = await this.updateUserProfile(user, dateOfBirth, validatedBody)
-    const newUserData = await this.updateUser(user, { username })
+    // const newUserData = await this.updateUser(user, { username })
 
     // @ts-ignore TODO see dateOfBirth
-    return response.created(this.serializeUserInfo(newUserData, profile))
+    return response.created(this.serializeUserInfo(user, profile))
   }
 
   async uploadUserAvatar({ auth, request }: HttpContext): Promise<UserInfo> {

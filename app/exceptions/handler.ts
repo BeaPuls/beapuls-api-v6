@@ -23,7 +23,8 @@ export default class HttpExceptionHandler extends ExceptionHandler {
   async handle(error: unknown | any, ctx: HttpContext) {
     if (
       (error.code === 'E_VALIDATION_ERROR' && error.status === 422) ||
-      error.code === 'E_VALIDATION_ERROR'
+      error.code === 'E_VALIDATION_ERROR' ||
+      error.status === 422
     ) {
       return ctx.response.unprocessableEntity({
         status: 422,
@@ -37,7 +38,8 @@ export default class HttpExceptionHandler extends ExceptionHandler {
 
     if (
       (error.code === 'E_AUTHORIZATION_FAILURE' && error.status === 404) ||
-      error.code === 'E_ROW_NOT_FOUND'
+      error.code === 'E_ROW_NOT_FOUND' ||
+      error.status === 404
     ) {
       return ctx.response.notFound({
         status: 404,
