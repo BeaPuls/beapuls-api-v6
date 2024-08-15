@@ -1,17 +1,26 @@
-import User from '#auth/models/user'
+import User from '#user/models/user'
 import Gender from '#profile/models/gender'
 import { BaseModel, beforeCreate, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import { v4 as uuid } from 'uuid'
-import Album from './album.js'
-import Artist from './artist.js'
-import Track from './track.js'
+import { randomUUID } from 'node:crypto'
+import Album from '../../album/models/album.js'
+import Artist from '../../artist/models/artist.js'
+import Track from '../../track/models/track.js'
+
+export interface ProfileData {
+  username: string
+  dateOfBirth: DateTime
+  description?: string | undefined
+  genderId: Gender['id'] | undefined
+}
 
 export default class Profile extends BaseModel {
+  static selfAssignPrimaryKey = true
+
   @beforeCreate()
   static async createUUID(profile: Profile) {
-    profile.id = uuid()
+    profile.id = randomUUID()
   }
 
   @column({ isPrimary: true })
@@ -24,24 +33,16 @@ export default class Profile extends BaseModel {
   declare dateOfBirth: DateTime
 
   @column()
-  declare description: string
+  declare description?: string
 
   @column()
-  declare avatar: string
+  declare avatar?: string
 
   @column.dateTime({ autoCreate: true, serializeAs: 'createdAt' })
   declare createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: 'updatedAt' })
   declare updatedAt: DateTime | null
-
-  // /**
-  //  * User prefered gender relation
-  //  */
-  // @column({ serializeAs: 'preferedGenderId' })
-  // declare preferedGenderId: Gender['id']
-  // @belongsTo(() => Gender, { foreignKey: 'preferedGenderId' })
-  // declare preferedGender: BelongsTo<typeof Gender>
 
   /**
    * User Gender relation

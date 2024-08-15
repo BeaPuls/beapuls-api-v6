@@ -13,7 +13,7 @@ import { Exception } from '@adonisjs/core/exceptions'
 | new UnAuthorizedException('message', 500, 'E_RUNTIME_EXCEPTION')
 |
 */
-export default class NotFountException extends Exception {
+export default class NotFoundException extends Exception {
   constructor(message?: string, code?: string) {
     super(message ?? ErrorCode.NOT_FOUND, {
       status: 404,

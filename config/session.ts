@@ -12,7 +12,7 @@ const sessionConfig = defineConfig({
    */
   clearWithBrowser: false,
 
-  /**
+  /**np
    * Define how long to keep the session data alive without
    * any activity.
    */

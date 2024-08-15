@@ -4,6 +4,10 @@
     "rootDir": "./",
     "outDir": "./build",
     "paths": {
+      "#classes/*": ["./app/classes/*.js"],
+      "#album/*": ["./app/album/*.js"],
+      "#artist/*": ["./app/artist/*.js"],
+      "#track/*": ["./app/track/*.js"],
       "#auth/*": ["./app/auth/*.js"],
       "#profile/*": ["./app/profile/*.js"],
       "#spotify/*": ["./app/spotify/*.js"],

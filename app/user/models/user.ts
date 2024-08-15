@@ -1,13 +1,23 @@
 import hash from '@adonisjs/core/services/hash'
-import { BaseModel, beforeCreate, column, hasOne } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  afterCreate,
+  beforeCreate,
+  column,
+  hasOne,
+  manyToMany,
+} from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
 
 import Profile from '#profile/models/profile'
 import { withAuthFinder } from '@adonisjs/auth'
 import { AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
-import { Secret, compose } from '@adonisjs/core/helpers'
-import type { HasOne } from '@adonisjs/lucid/types/relations'
-import { v4 as uuid } from 'uuid'
+import { compose } from '@adonisjs/core/helpers'
+import type { HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import { randomUUID } from 'node:crypto'
+import Role from './role.js'
+import { RoleName } from '#user/models/role'
+import NotFoundException from '#exceptions/not_found.exception'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -15,6 +25,8 @@ const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
 })
 
 export default class User extends compose(BaseModel, AuthFinder) {
+  static selfAssignPrimaryKey = true
+
   static accessTokens = DbAccessTokensProvider.forModel(User, {
     expiresIn: '30 days',
     prefix: 'oat_',
@@ -27,7 +39,16 @@ export default class User extends compose(BaseModel, AuthFinder) {
 
   @beforeCreate()
   static async createUUID(user: User) {
-    user.id = uuid()
+    user.id = randomUUID()
+  }
+
+  @afterCreate()
+  static async setRole(user: User) {
+    const role = await Role.findBy('name', RoleName.USER)
+    if (!role) {
+      throw new NotFoundException('Role not found')
+    }
+    await user.related('roles').attach([role.id])
   }
 
   @column({ isPrimary: true })
@@ -39,30 +60,25 @@ export default class User extends compose(BaseModel, AuthFinder) {
   @column({ serializeAs: null })
   declare password: string
 
-  @column({
-    prepare: (accessToken: Secret<string>) => accessToken.release(),
-    consume: (accessToken) => new Secret(accessToken),
+  /**
+   * Role relation
+   */
+  @manyToMany(() => Role, {
+    pivotTable: 'role_users',
+    pivotForeignKey: 'user_id',
+    pivotRelatedForeignKey: 'role_id',
   })
-  declare accessToken: Secret<string>
-
-  @column({
-    prepare: (accessToken: Secret<string>) => accessToken.release(),
-    consume: (accessToken) => new Secret(accessToken),
-  })
-  declare refreshToken: Secret<string>
-
-  @column()
-  declare spotifyId: string
-
-  @column.dateTime({ autoCreate: true, serializeAs: 'createdAt' })
-  declare createdAt: DateTime
-
-  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: 'updatedAt' })
-  declare updatedAt: DateTime | null
+  declare roles: ManyToMany<typeof Role>
 
   /**
    * Profile relation
    */
   @hasOne(() => Profile)
   declare profile: HasOne<typeof Profile>
+
+  @column.dateTime({ autoCreate: true, serializeAs: 'createdAt' })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: 'updatedAt' })
+  declare updatedAt: DateTime | null
 }

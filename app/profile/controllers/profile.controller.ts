@@ -1,24 +1,24 @@
-import { default as User } from '#auth/models/user'
-import NotFountException from '#exceptions/not_fount.exception'
-import Gender from '#profile/models/gender'
 import Profile from '#profile/models/profile'
-import { createProfileValidator } from '#profile/validators/create_profile_validator'
-import { uploadProfileAvatarValidator } from '#profile/validators/upload_profile_avatar_validator'
+import { createOrUpdateProfileValidator } from '#profile/validators/create_or_update_profile.validator'
+import { uploadProfileAvatarValidator } from '#profile/validators/upload_profile_avatar.validator'
 import { inject } from '@adonisjs/core'
 import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { HttpContext } from '@adonisjs/core/http'
 import app from '@adonisjs/core/services/app'
 import { DateTime } from 'luxon'
-// import UserService from '../../user/services/user.service.js'
+import { ApiResponse } from '#classes/api_response'
+import NotFoundException from '#exceptions/not_found.exception'
+import { ErrorMessage } from '#exceptions/error_message'
+import User from '#user/models/user'
+import ForbiddenException from '#exceptions/forbidden.exception'
 
-type UserInfo = {
-  id: number | string
-  username: string | null
-  dateOfBirth: DateTime
-  description: string
-  genderId: Gender['id']
-  // preferedGenderId: Gender['id']
-}
+// type UserInfo = {
+//   id: number | string
+//   username: string | null
+//   dateOfBirth: DateTime
+//   description: string
+//   genderId: Gender['id']
+// }
 
 @inject()
 export default class ProfileController {
@@ -36,7 +36,15 @@ export default class ProfileController {
       trackIds: profile.tracks,
       albumIds: profile.albums,
       artistIds: profile.artists,
-      // preferedGenderId: profile.preferedGenderId,
+    }
+  }
+
+  private serializeProfileData(data: any) {
+    return {
+      username: data.username as string,
+      dateOfBirth: data.date_of_birth as Date,
+      description: data.description as string | undefined,
+      genderId: data.gender_id as number,
     }
   }
 
@@ -45,16 +53,11 @@ export default class ProfileController {
 
     const profile = await Profile.query().where('user_id', user.id).first()
     if (!profile) {
-      throw new NotFountException()
+      throw new NotFoundException()
     }
 
     const profileData = this.serializeUserInfo(user, profile)
-    return response.status(200).send({
-      status: true,
-      data: {
-        ...profileData,
-      },
-    })
+    return ApiResponse.response({ response }, profileData, 'Profile fetched successfully', 200)
   }
 
   // async getProfiles({ auth }: HttpContext) {
@@ -71,24 +74,12 @@ export default class ProfileController {
   //   }
   // }
 
-  // private async updateUser(user: User, data: Pick<User, 'username'>) {
-  //   user.username = data.username
-  //   return user.save()
-  // }
-
-  // Add  'preferedGenderId'
-  private async updateUserProfile(
-    user: User,
-    dateOfBirth: Date,
-    data: Pick<Profile, 'username' | 'description' | 'genderId'>
-  ) {
+  private async updateUserProfile(user: User, data: Profile) {
     const profile = (await Profile.query().where('user_id', user.id).first()) ?? new Profile()
 
-    // @ts-ignore TODO error type
     profile.username = data.username
-    profile.dateOfBirth = DateTime.fromJSDate(dateOfBirth)
+    profile.dateOfBirth = DateTime.fromJSDate(data.dateOfBirth.toJSDate())
     profile.description = data.description
-    // profile.preferedGenderId = data.preferedGenderId
     profile.genderId = data.genderId
     profile.userId = user.id
     return profile.save()
@@ -97,24 +88,39 @@ export default class ProfileController {
   async createUserProfile({ auth, request, response }: HttpContext): Promise<void> {
     const user = auth.getUserOrFail()
 
-    const { dateOfBirth, ...validatedBody } = await request.validateUsing(createProfileValidator)
+    const existingProfile = await Profile.query().where('user_id', user.id).first()
+    if (existingProfile) {
+      throw new ForbiddenException(ErrorMessage.PROFILE_ALREADY_SET)
+    }
 
-    const profile = await this.updateUserProfile(user, dateOfBirth, validatedBody)
-    // const newUserData = await this.updateUser(user, { username })
+    const createProfileData = await request.validateUsing(createOrUpdateProfileValidator)
+    const profileData = this.serializeProfileData(createProfileData)
+
+    const profile = await this.updateUserProfile(user, profileData as unknown as Profile)
 
     // @ts-ignore TODO see dateOfBirth
-    return response.created(this.serializeUserInfo(user, profile))
+    return ApiResponse.response(
+      { response },
+      this.serializeUserInfo(user, profile),
+      'Profile created successfully',
+      201
+    )
   }
 
-  async uploadUserAvatar({ auth, request }: HttpContext): Promise<UserInfo> {
+  async uploadUserAvatar({ auth, request, response }: HttpContext): Promise<void> {
     const user = auth.getUserOrFail()
     const { avatar } = await request.validateUsing(uploadProfileAvatarValidator)
     await this.saveUserAvatarImage(user, avatar)
     const profile = await Profile.query().where('user_id', user.id).first()
     if (!profile) {
-      throw new NotFountException()
+      throw new NotFoundException(ErrorMessage.PROFILE_NOT_FOUND)
     }
-    return this.serializeUserInfo(user, profile)
+    ApiResponse.response(
+      { response },
+      this.serializeUserInfo(user, profile),
+      'Profile avatar uploaded successfully',
+      200
+    )
   }
 
   private buildAvatarFileName(user: User, file: MultipartFile) {
@@ -141,18 +147,18 @@ export default class ProfileController {
   }
 
   async getUserAvatar({ auth, response }: HttpContext): Promise<void> {
-    const user = auth.getUserOrFail()
+    const user = await auth.getUserOrFail()
 
     const profile = await Profile.query().where('user_id', user.id).first()
     if (!profile) {
-      throw new NotFountException()
+      throw new NotFoundException(ErrorMessage.PROFILE_NOT_FOUND)
     }
 
     const avatar = profile?.avatar
     if (!avatar) {
-      throw new NotFountException()
+      throw new NotFoundException(ErrorMessage.PROFILE_AVATAR_NOT_FOUND)
     }
     const absolutePath = app.makePath('uploads', avatar)
-    return response.download(absolutePath)
+    ApiResponse.response({ response }, absolutePath, 'Profile avatar fetched successfully', 200)
   }
 }

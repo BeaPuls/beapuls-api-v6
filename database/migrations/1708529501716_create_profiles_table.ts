@@ -11,13 +11,7 @@ export default class extends BaseSchema {
       table.text('description').nullable()
       table.text('avatar').nullable()
 
-      // table
-      //   .integer('prefered_gender_id')
-      //   .unsigned()
-      //   .references('id')
-      //   .inTable('genders')
-      //   .onDelete('RESTRICT')
-      table.integer('gender_id').unsigned().references('id').inTable('genders').onDelete('RESTRICT')
+      table.uuid('gender_id').unsigned().references('id').inTable('genders').onDelete('RESTRICT')
 
       table
         .uuid('user_id')
@@ -26,9 +20,7 @@ export default class extends BaseSchema {
         .references('id')
         .inTable('users')
         .onDelete('CASCADE')
-      /**
-       * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL
-       */
+
       table.timestamp('created_at', { useTz: true })
       table.timestamp('updated_at', { useTz: true })
     })

@@ -12,10 +12,9 @@ type Options = {
 
 const fields = {
   username: 'username',
-  dateOfBirth: 'date_of_birth',
+  date_of_birth: 'date_of_birth',
   description: 'description',
-  // preferedGenderId: 'prefered_gender_id',
-  genderId: 'gender_id',
+  gender_id: 'gender_id',
 }
 
 /**
@@ -50,12 +49,11 @@ vine.messagesProvider = new SimpleMessagesProvider(
   fields
 )
 
-export const createProfileValidator = vine.compile(
+export const createOrUpdateProfileValidator = vine.compile(
   vine.object({
-    username: vine.string().use(uniqueRule({ table: 'profiles', column: 'username' })),
-    dateOfBirth: vine.date({ formats: ['YYYY-MM-DD'] }),
-    description: vine.string(),
-    // preferedGenderId: vine.number(),
-    genderId: vine.number(),
+    username: vine.string().use(uniqueRule({ table: 'users', column: 'username' })),
+    date_of_birth: vine.date({ formats: ['YYYY-MM-DD'] }),
+    description: vine.string().optional(),
+    gender_id: vine.string(),
   })
 )

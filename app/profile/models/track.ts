@@ -1,13 +1,18 @@
 import { BaseModel, beforeCreate, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
-import { v4 as uuid } from 'uuid'
+import { randomUUID } from 'node:crypto'
 import Profile from './profile.js'
+import AuthProviders from '#auth/models/auth_providers'
+import ProviderType from '#auth/models/provider_type'
 
 export default class Track extends BaseModel {
+  static table = 'profile_tracks'
+  static selfAssignPrimaryKey = true
+
   @beforeCreate()
   static async createUUID(track: Track) {
-    track.id = uuid()
+    track.id = randomUUID()
   }
 
   @column({ isPrimary: true })
@@ -22,20 +27,28 @@ export default class Track extends BaseModel {
   @column({ serializeAs: 'artistName' })
   declare artistName?: string
 
-  @column({ serializeAs: 'spotifyUri' })
-  declare spotifyUri?: string
+  @column({ serializeAs: 'providerItemUri' })
+  declare providerItemUri?: string
 
-  @column({ serializeAs: 'spotifyImage' })
-  declare spotifyImage?: string
+  @column({ serializeAs: 'providerItemImage' })
+  declare providerItemImage?: string
 
-  @column({ serializeAs: 'spotifyId' })
-  declare spotifyId?: string
+  @column({ serializeAs: 'providerItemId' })
+  declare providerItemId?: string
 
-  @column.dateTime({ autoCreate: true, serializeAs: 'createdAt' })
-  declare createdAt: DateTime
+  /**
+   * Provider Type relation
+   */
+  @column({ serializeAs: 'providerTypeId' })
+  declare providerTypeId: ProviderType['id']
+  @belongsTo(() => ProviderType, { foreignKey: 'providerTypeId' })
+  declare providerType: BelongsTo<typeof ProviderType>
 
-  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: 'updatedAt' })
-  declare updatedAt: DateTime | null
+  @beforeCreate()
+  static async setDefaultProviderType(authProvider: AuthProviders) {
+    const providerType = await ProviderType.findByOrFail('name', 'Spotify')
+    authProvider.providerTypeId = providerType.id
+  }
 
   /**
    * Profile relation
@@ -44,4 +57,10 @@ export default class Track extends BaseModel {
   declare profileId: Profile['id']
   @belongsTo(() => Profile)
   declare profile: BelongsTo<typeof Profile>
+
+  @column.dateTime({ autoCreate: true, serializeAs: 'createdAt' })
+  declare createdAt: DateTime
+
+  @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: 'updatedAt' })
+  declare updatedAt: DateTime | null
 }

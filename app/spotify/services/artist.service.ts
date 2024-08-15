@@ -9,9 +9,9 @@ export default class ArtistService {
     for (let artist of artists) {
       const newArtist = new Artist()
       newArtist.name = artist.name
-      newArtist.spotifyId = artist.id
-      newArtist.spotifyImage = artist.album?.images[0].url
-      newArtist.spotifyUri = artist.uri
+      newArtist.providerItemId = artist.id
+      newArtist.providerItemImage = artist.album?.images[0].url
+      newArtist.providerItemUri = artist.uri
       newArtist.popularity = artist.popularity
       newArtist.followers = artist.followers?.total
       newArtist.profileId = profileId

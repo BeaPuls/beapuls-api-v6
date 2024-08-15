@@ -51,6 +51,12 @@ npm run dev
 
 ## Utils 
 
+Make migration
+
+```bash
+node ace make:migration auth_access_tokens
+```
+
 List all routes of API
 
 ```bash

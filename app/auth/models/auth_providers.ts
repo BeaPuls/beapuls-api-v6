@@ -1,12 +1,27 @@
-import User from '#auth/models/user'
+import User from '#user/models/user'
 import { SocialProviders } from '@adonisjs/ally/types'
-import { BaseModel, belongsTo, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, belongsTo, column } from '@adonisjs/lucid/orm'
 import type { BelongsTo } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
+import ProviderType from './provider_type.js'
 
 export default class AuthProviders extends BaseModel {
   @column({ isPrimary: true })
   declare name: keyof SocialProviders
+
+  /**
+   * Provider Type relation
+   */
+  @column({ serializeAs: 'providerTypeId' })
+  declare providerTypeId: ProviderType['id']
+  @belongsTo(() => ProviderType, { foreignKey: 'providerTypeId' })
+  declare providerType: BelongsTo<typeof ProviderType>
+
+  @beforeCreate()
+  static async setDefaultProviderType(authProvider: AuthProviders) {
+    const providerType = await ProviderType.findByOrFail('name', 'Spotify')
+    authProvider.providerTypeId = providerType.id
+  }
 
   /**
    * Value of the token
@@ -30,7 +45,7 @@ export default class AuthProviders extends BaseModel {
    * Static time in seconds when the token will expire
    */
   @column()
-  declare expiresIn?: number
+  declare expiresIn: number
 
   /**
    * Timestamp at which the token expires
@@ -39,7 +54,7 @@ export default class AuthProviders extends BaseModel {
     autoCreate: false,
     autoUpdate: false,
   })
-  declare expiresAt?: DateTime
+  declare expiresAt: DateTime
 
   /**
    * Provider User Id

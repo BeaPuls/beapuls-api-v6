@@ -13,6 +13,13 @@ export default class extends BaseSchema {
       table.integer('expires_in')
       table.timestamp('expires_at')
 
+      table
+        .uuid('provider_type_id')
+        .notNullable()
+        .references('id')
+        .inTable('provider_types')
+        .onDelete('CASCADE')
+
       table.uuid('user_id').notNullable().references('id').inTable('users').onDelete('CASCADE')
 
       table.primary(['name', 'user_id'])

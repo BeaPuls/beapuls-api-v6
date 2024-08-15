@@ -1,4 +1,4 @@
-import { default as User } from '#auth/models/user'
+import { default as User } from '#user/models/user'
 import { loginAuthValidator } from '#auth/validators/login_auth.validator'
 import { registerAuthValidator } from '#auth/validators/register_auth.validator'
 import { HttpContext } from '@adonisjs/core/http'

@@ -1,5 +1,6 @@
-import { BaseModel, column } from '@adonisjs/lucid/orm'
+import { BaseModel, beforeCreate, column } from '@adonisjs/lucid/orm'
 import { DateTime } from 'luxon'
+import { randomUUID } from 'node:crypto'
 
 export enum GenderName {
   MALE = 'Male',
@@ -7,8 +8,15 @@ export enum GenderName {
   OTHER = 'Other',
 }
 export default class Gender extends BaseModel {
+  static selfAssignPrimaryKey = true
+
+  @beforeCreate()
+  static async createUUID(gender: Gender) {
+    gender.id = randomUUID()
+  }
+
   @column({ isPrimary: true })
-  declare id: number
+  declare id: string
 
   @column()
   declare name: GenderName

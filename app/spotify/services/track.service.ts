@@ -8,9 +8,9 @@ export default class TrackService {
     for (let track of tracks) {
       const newTrack = new Track()
       newTrack.name = track.name
-      newTrack.spotifyId = track.id
-      newTrack.spotifyImage = track.album?.images[0].url
-      newTrack.spotifyUri = track.uri
+      newTrack.providerItemId = track.id
+      newTrack.providerItemImage = track?.album?.images[0].url
+      newTrack.providerItemUri = track.uri
       newTrack.artistName = track.artists?.name
       newTrack.albumName = track.album?.name
       newTrack.profileId = profileId

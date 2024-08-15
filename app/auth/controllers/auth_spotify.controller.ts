@@ -1,5 +1,5 @@
 import AuthProviders from '#auth/models/auth_providers'
-import User from '#auth/models/user'
+import User from '#user/models/user'
 import Artist from '#profile/models/artist'
 import Track from '#profile/models/track'
 import ProfileService from '#profile/services/profile.service'
@@ -67,6 +67,7 @@ export default class SpotifyController {
         email: email as string,
       }
     )
+
     await AuthProviders.updateOrCreate(
       {
         name: 'spotify',
@@ -77,10 +78,11 @@ export default class SpotifyController {
         refreshToken: token.refreshToken,
         type: token.type,
         expiresIn: token.expiresIn,
-        expiresAt: DateTime.fromJSDate(token.expiresAt),
-        providerUserId,
+        expiresAt: DateTime.fromJSDate(token.expiresAt), // Convert Date to DateTime
+        providerUserId: providerUserId,
       }
     )
+
     const profile = await this.profileService.createUserProfile(user, avatarUrl, nickName)
 
     this.initializeUserData(profile.id, user.id)

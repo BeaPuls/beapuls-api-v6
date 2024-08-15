@@ -1,6 +1,6 @@
 {
   "name": "beapuls-api-v6",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "private": true,
   "type": "module",
   "license": "UNLICENSED",
@@ -16,7 +16,14 @@
     "seed:dev": "NODE_ENV=development node ace db:seed"
   },
   "imports": {
+    "#search/*": "./app/search/*.js",
+    "#comment/*": "./app/comment/*.js",
+    "#classes/*": "./app/classes/*.js",
+    "#album/*": "./app/album/*.js",
+    "#track/*": "./app/track/*.js",
+    "#artist/*": "./app/artist/*.js",
     "#auth/*": "./app/auth/*.js",
+    "#user/*": "./app/user/*.js",
     "#profile/*": "./app/profile/*.js",
     "#spotify/*": "./app/spotify/*.js",
     "#controllers/*": "./app/controllers/*.js",
@@ -57,7 +64,7 @@
     "@adonisjs/cors": "^2.2.1",
     "@adonisjs/lucid": "^20.1.0",
     "@adonisjs/session": "^7.1.1",
-    "@vinejs/vine": "^1.7.0",
+    "@vinejs/vine": "^2.0.0",
     "axios": "^1.6.7",
     "luxon": "^3.4.4",
     "pg": "^8.11.3",

@@ -6,18 +6,20 @@ export default class extends BaseSchema {
   async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string('name', 255)
-      table.string('album_name', 255)
-      table.string('artist_name', 255)
-      table.string('spotify_uri', 2048)
-      table.string('spotify_image', 2048)
-      table.string('spotify_id', 255)
+      table.string('name', 255).notNullable()
+      table.string('album_name', 255).nullable()
+      table.string('artist_name', 255).notNullable()
+      table.string('provider_item_uri', 2048).notNullable()
+      table.string('provider_item_image', 2048).nullable()
+      table.string('provider_item_id', 255).notNullable()
+      table.integer('up_vote').nullable().defaultTo(0)
+      table.integer('down_vote').nullable().defaultTo(0)
 
       table
-        .uuid('profile_id')
+        .uuid('provider_type_id')
         .notNullable()
         .references('id')
-        .inTable('profiles')
+        .inTable('provider_types')
         .onDelete('CASCADE')
 
       /**

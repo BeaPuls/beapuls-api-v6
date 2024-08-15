@@ -9,12 +9,16 @@ export default class SpotifyController {
   async search({ request, response, auth }: HttpContext) {
     const user = auth.getUserOrFail()
     const query = request.input('query')
-    const types = request.input('types', []) as ('track' | 'artist' | 'album')[]
+    let types = request.input('types', []) as ('track' | 'artist' | 'album')[]
+    if (typeof types === 'string') {
+      types = [types]
+    }
     const limit = request.input('limit', 5)
 
     if (!query) {
       return response.status(400).send({ error: 'Query parameter is required' })
     }
+
     if (!types || !Array.isArray(types) || types.length === 0) {
       return response
         .status(400)

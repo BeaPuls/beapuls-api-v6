@@ -46,7 +46,7 @@ export default class HttpExceptionHandler extends ExceptionHandler {
         path: ctx.request.url(),
         timestamp: DateTime.local(),
         code: 'E_RESOURCE_NOT_FOUND',
-        message: 'The requested resource was not found',
+        message: error.message ?? 'The requested resource was not found',
         detail: 'Ensure that the resource exists and that you have to correct permissions',
       })
     }
@@ -62,19 +62,17 @@ export default class HttpExceptionHandler extends ExceptionHandler {
       })
     }
 
-    if (typeof error.handle === 'function') {
-      return error.handle(error, ctx)
-    }
-
-    return ctx.response.internalServerError({
-      status: 500,
-      path: ctx.request.url(),
-      timestamp: DateTime.local(),
-      code: 'E_INTERNAL_SERVER_ERROR',
-      message: 'A internal server error occured',
-    })
-
-    // return super.handle(error, ctx)
+    // if (error.code === 500) {
+    //   return ctx.response.internalServerError({
+    //     status: 500,
+    //     path: ctx.request.url(),
+    //     timestamp: DateTime.local(),
+    //     code: 'E_INTERNAL_SERVER_ERROR',
+    //     message: 'A internal server error occured',
+    //   })
+    // } else {
+    return super.handle(error, ctx)
+    // }
   }
 
   /**

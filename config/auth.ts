@@ -9,7 +9,7 @@ const authConfig = defineConfig({
     api: tokensGuard({
       provider: tokensUserProvider({
         tokens: 'accessTokens',
-        model: () => import('#auth/models/user'),
+        model: () => import('#user/models/user'),
       }),
     }),
   },

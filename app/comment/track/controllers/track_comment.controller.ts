@@ -1,0 +1,170 @@
+import { HttpContext } from '@adonisjs/core/http'
+import { inject } from '@adonisjs/fold'
+import { TrackCommentService } from '#comment/track/services/track_comment.service'
+import { createOrUpdateTrackCommentValidator } from '#comment/track/validators/create_or_update_track_comment.validator'
+import { ApiResponse } from '#classes/api_response'
+import NotFoundException from '#exceptions/not_found.exception'
+import Track from '#track/models/track'
+import TrackComment from '../models/track_comment.js'
+
+@inject()
+export default class TrackCommentController {
+  constructor(private readonly trackCommentService: TrackCommentService) {}
+
+  private serializeTrackCommentData(data: any) {
+    return {
+      id: data.id as string,
+      userId: data.user_id as string,
+      trackId: data.track_id as string,
+      comment: data.comment as string,
+      upVote: data.up_vote as number | undefined,
+      downVote: data.down_vote as number | undefined,
+    }
+  }
+
+  async create({ auth, params, request, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const { trackId } = params
+    if (!trackId) {
+      throw new NotFoundException('Track id missing')
+    }
+
+    const track = await Track.find(trackId)
+    if (!track) {
+      throw new NotFoundException('Track not existing')
+    }
+
+    const createTrackComment = await request.validateUsing(createOrUpdateTrackCommentValidator)
+    let trackCommentData = this.serializeTrackCommentData(createTrackComment)
+
+    trackCommentData = {
+      ...trackCommentData,
+      trackId: track.id,
+      userId: user.id,
+    }
+
+    const created = await this.trackCommentService.create(trackCommentData as TrackComment)
+    if (!created) {
+      return ApiResponse.response({ response }, null, 'Track comment creation failed', 400)
+    }
+    return ApiResponse.response({ response }, created, 'Track comment created successfully', 201)
+  }
+
+  async findAll({ response }: HttpContext) {
+    const trackComments = await this.trackCommentService.findAll()
+    if (!trackComments) {
+      return ApiResponse.response({ response }, null, 'Track comments not found', 404)
+    }
+    return ApiResponse.response(
+      { response },
+      trackComments,
+      'Track comments found successfully',
+      200
+    )
+  }
+
+  async findOne({ params, response }: HttpContext) {
+    const { id } = params
+    if (!id) {
+      throw new NotFoundException('Track comment id missing')
+    }
+
+    const trackComment = await this.trackCommentService.findOne(id)
+    if (!trackComment) {
+      return ApiResponse.response({ response }, null, 'Track comment not found', 404)
+    }
+    return ApiResponse.response({ response }, trackComment, 'Track comment found successfully', 200)
+  }
+
+  async update({ auth, params, request, response }: HttpContext) {
+    const user = auth.getUserOrFail()
+    const { id } = params
+    if (!id) {
+      throw new NotFoundException('Track comment id missing')
+    }
+
+    const trackComment = await TrackComment.find(id)
+    if (!trackComment) {
+      throw new NotFoundException('Track comment not found')
+    }
+
+    const updateTrackComment = await request.validateUsing(createOrUpdateTrackCommentValidator)
+
+    let trackCommentData = this.serializeTrackCommentData(updateTrackComment)
+
+    trackCommentData = {
+      ...trackCommentData,
+      userId: user.id,
+    }
+
+    const updated = await this.trackCommentService.update(id, trackCommentData as TrackComment)
+    if (!updated) {
+      return ApiResponse.response({ response }, null, 'Track comment update failed', 400)
+    }
+    return ApiResponse.response({ response }, updated, 'Track comment updated successfully', 200)
+  }
+
+  async remove({ params, response }: HttpContext) {
+    const { id } = params
+    if (!id) {
+      throw new NotFoundException('Track comment id missing')
+    }
+
+    const removed = await this.trackCommentService.remove(id)
+    if (!removed) {
+      return ApiResponse.response({ response }, null, 'Track comment deletion failed', 400)
+    }
+    return ApiResponse.response({ response }, removed, 'Track comment deleted successfully', 200)
+  }
+
+  @inject()
+  async toggleVote({ auth, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
+    const { id, voteType } = params
+    if (!id) {
+      throw new NotFoundException('Track comment id missing')
+    }
+
+    const trackComment = await TrackComment.find(id)
+    if (!trackComment) {
+      throw new NotFoundException('Track comment not found')
+    }
+
+    const hasVoted = await this.trackCommentService.hasUserVoted(id, user.id)
+    let updated
+
+    if (hasVoted) {
+      updated = await this.trackCommentService.toggleUserVote(id, user.id, voteType)
+      if (!updated) {
+        return ApiResponse.response(
+          { response },
+          null,
+          `${voteType.charAt(0).toUpperCase() + voteType.slice(1)}vote removal failed`,
+          400
+        )
+      }
+      return ApiResponse.response(
+        { response },
+        updated,
+        `${voteType.charAt(0).toUpperCase() + voteType.slice(1)}vote removed successfully`,
+        200
+      )
+    } else {
+      updated = await this.trackCommentService.toggleUserVote(id, user.id, voteType)
+      if (!updated) {
+        return ApiResponse.response(
+          { response },
+          null,
+          `${voteType.charAt(0).toUpperCase() + voteType.slice(1)}vote failed`,
+          400
+        )
+      }
+      return ApiResponse.response(
+        { response },
+        updated,
+        `${voteType.charAt(0).toUpperCase() + voteType.slice(1)}voted successfully`,
+        200
+      )
+    }
+  }
+}

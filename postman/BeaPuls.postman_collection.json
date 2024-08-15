@@ -1,0 +1,1975 @@
+{
+	"info": {
+		"_postman_id": "9fa5732a-1ae3-4e14-9eab-bb763384a230",
+		"name": "BeaPuls",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "31731329"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Basic",
+					"item": [
+						{
+							"name": "Register",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "email",
+											"value": "test@test.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "quentin1",
+											"type": "text"
+										},
+										{
+											"key": "password_confirmation",
+											"value": "quentin1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/auth/register",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"auth",
+										"register"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"let body = pm.response.json()",
+											"pm.collectionVariables.set(\"TOKEN\", body.data.token.token);",
+											""
+										],
+										"type": "text/javascript",
+										"packages": {}
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "email",
+											"value": "test@test.com",
+											"type": "text"
+										},
+										{
+											"key": "password",
+											"value": "quentin1",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/auth/login",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"auth",
+										"login"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Spotify",
+					"item": [
+						{
+							"name": "Authorize",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/auth/spotify",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"auth",
+										"spotify"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Login callback",
+							"request": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/auth/spotify/callback",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"auth",
+										"spotify",
+										"callback"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Success",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/auth/success",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"auth",
+								"success"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "MTc.8pq16zTaBVjt78TPHHnIh_WKqdmEZpISROJJMVa965-Q-rL4F2L4--3cO0vf",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/auth/logout",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"auth",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Profile",
+			"item": [
+				{
+					"name": "Avatar",
+					"item": [
+						{
+							"name": "Avatar",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/user/profile/avatar",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"user",
+										"profile",
+										"avatar"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Avatar",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "avatar",
+											"type": "file",
+											"src": "/Users/qtn/Desktop/Capture d’écran 2024-08-05 à 10.40.33.png"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/user/profile/avatar",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"user",
+										"profile",
+										"avatar"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/user/profile",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Profile",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "urlencoded",
+							"urlencoded": [
+								{
+									"key": "date_of_birth",
+									"value": "2001-02-03",
+									"type": "text"
+								},
+								{
+									"key": "username",
+									"value": "dfsdfddfsfdfdcsc",
+									"type": "text"
+								},
+								{
+									"key": "description",
+									"value": "sdfsdf",
+									"type": "text"
+								},
+								{
+									"key": "gender_id",
+									"value": "386f7439-0bfd-4425-811d-5a880ab0fbdb",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/user/profile",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "User",
+			"item": [
+				{
+					"name": "Profile",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/auth/user/profile",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"auth",
+								"user",
+								"profile"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Spotify",
+			"item": [
+				{
+					"name": "Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "oat_OA.aDRtVWR3UC1ocXNJSUcxMFVWeERkT3FuR0JKY1ZHOW5qdUZuM2ZEejMwMjg2MTg3Mw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/spotify/search?query=justin&types=track,artist,album&limit=3",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"spotify",
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "justin"
+								},
+								{
+									"key": "types",
+									"value": "track,artist,album"
+								},
+								{
+									"key": "limit",
+									"value": "3"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Album",
+			"item": [
+				{
+					"name": "Albums",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Album",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums/c40e84f2-9d13-42ef-8612-90c8066b43c1",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums",
+								"c40e84f2-9d13-42ef-8612-90c8066b43c1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Album ProviderId",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums/provider/dsfsdfs",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums",
+								"provider",
+								"dsfsdfs"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Album",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"fdsfs\",\n    \"artist_name\": \"sdfsdf\",\n    \"provider_item_uri\": \"dfsdfsd\",\n    \"provider_item_image\": \"dsfsdfs\",\n    \"provider_item_id\": \"dsfsdfs\",\n    \"provider_type_id\" : \"FSDF\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Album",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"fdsfs\",\n    \"artist_name\": \"sdfsdf\",\n    \"provider_item_uri\": \"dfsdfsd\",\n    \"provider_item_image\": \"dsfsdfs\",\n    \"provider_item_id\": \"dsfsdfs\",\n    \"up_vote\": 1,\n    \"down_vote\": 24345345\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums/0d7f2754-a27f-4672-8f66-a5887520ec17",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums",
+								"0d7f2754-a27f-4672-8f66-a5887520ec17"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Album",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums/c40e84f2-9d13-42ef-8612-90c8066b43c1",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums",
+								"c40e84f2-9d13-42ef-8612-90c8066b43c1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Album Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums/search?quey=\"d\"",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums",
+								"search"
+							],
+							"query": [
+								{
+									"key": "quey",
+									"value": "\"d\""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Album Vote",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/albums/25e81789-9875-4b6c-95d0-c6db82bbe3b3/vote/up",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"albums",
+								"25e81789-9875-4b6c-95d0-c6db82bbe3b3",
+								"vote",
+								"up"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Artist",
+			"item": [
+				{
+					"name": "Artists",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Artist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists/27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists",
+								"27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Artist ProviderId",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists/e600c9c2-1589-4bc4-9dd1-3f7a8d50527b",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists",
+								"e600c9c2-1589-4bc4-9dd1-3f7a8d50527b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Artist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"fdsfs\",\n    \"popularity\": 3424,\n    \"followers\": 23435,\n    \"provider_item_uri\": \"sdfsdf\",\n    \"provider_item_image\": \"dsfsdfs\",\n    \"provider_item_id\": \"dsfsdfs\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Artist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n     \"name\": \"fdsfs\",\n    \"popularity\": 3424,\n    \"followers\": 23435,\n    \"provider_item_uri\": \"sdfsdf\",\n    \"provider_item_image\": \"dsfsdfs\",\n    \"provider_item_id\": \"dsfsdfs\",\n    \"up_vote\": 1,\n    \"down_vote\": 2344\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists/27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists",
+								"27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Artist",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists/27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists",
+								"27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Artist Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists/e600c9c2-1589-4bc4-9dd1-3f7a8d50527b",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists",
+								"e600c9c2-1589-4bc4-9dd1-3f7a8d50527b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Artist Vote",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/artists/367b4492-5393-45b7-b68d-0edec440720e/vote/down",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"artists",
+								"367b4492-5393-45b7-b68d-0edec440720e",
+								"vote",
+								"down"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Track",
+			"item": [
+				{
+					"name": "Tracks",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks"
+							],
+							"query": [
+								{
+									"key": "offset",
+									"value": "3",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks/a6cc6389-023d-4bc4-86c2-e5063c294990",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks",
+								"a6cc6389-023d-4bc4-86c2-e5063c294990"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track ProviderId",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks/e600c9c2-1589-4bc4-9dd1-3f7a8d50527b",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks",
+								"e600c9c2-1589-4bc4-9dd1-3f7a8d50527b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"fdsfs\",\n    \"artist_name\": \"dfsd\",\n    \"album_name\": \"\",\n    \"provider_item_uri\": \"sdfsdf\",\n    \"provider_item_image\": \"dsfsdfs\",\n    \"provider_item_id\": \"dsfsdfs\",\n    \"up_vote\": 1,\n    \"down_vote\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"fdsfs\",\n    \"artist_name\": \"dfsd\",\n    \"album_name\": \"\",\n    \"provider_item_uri\": \"sdfsdf\",\n    \"provider_item_image\": \"dsfsdfs\",\n    \"provider_item_id\": \"dsfsdfs\",\n    \"up_vote\": 1,\n    \"down_vote\": 2222\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks/a6cc6389-023d-4bc4-86c2-e5063c294990",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks",
+								"a6cc6389-023d-4bc4-86c2-e5063c294990"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"test\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks/a6cc6389-023d-4bc4-86c2-e5063c294990",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks",
+								"a6cc6389-023d-4bc4-86c2-e5063c294990"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks/e600c9c2-1589-4bc4-9dd1-3f7a8d50527b",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks",
+								"e600c9c2-1589-4bc4-9dd1-3f7a8d50527b"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Track Vote",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/tracks/a4f338cf-da93-474d-8b42-cc482ae9ba60/vote/down",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"tracks",
+								"a4f338cf-da93-474d-8b42-cc482ae9ba60",
+								"vote",
+								"down"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Comment",
+			"item": [
+				{
+					"name": "Track",
+					"item": [
+						{
+							"name": "Track Comments",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/track",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"track"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Track Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/track/50c3938e-f893-4504-8102-a56b0ff3c254",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"track",
+										"50c3938e-f893-4504-8102-a56b0ff3c254"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Track Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"comment\": \"TESTTT\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/tracks/track/c7ac93c2-bb2a-42cd-b9e8-1f793cbb93c0",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"tracks",
+										"track",
+										"c7ac93c2-bb2a-42cd-b9e8-1f793cbb93c0"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Track Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"comment\": \"DFSDFSDFS\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/track/50c3938e-f893-4504-8102-a56b0ff3c254",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"track",
+										"50c3938e-f893-4504-8102-a56b0ff3c254"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Track Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"test\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/track/50c3938e-f893-4504-8102-a56b0ff3c254",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"track",
+										"50c3938e-f893-4504-8102-a56b0ff3c254"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Track Comment Vote",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/track/383df3ac-798f-4ad6-b42d-d66f9b99aa27/vote/up",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"track",
+										"383df3ac-798f-4ad6-b42d-d66f9b99aa27",
+										"vote",
+										"up"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Album",
+					"item": [
+						{
+							"name": "Album Comments",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/album",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"album"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Album Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/album/475f14ff-7b22-4f14-9620-958ad2cd73b2",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"album",
+										"475f14ff-7b22-4f14-9620-958ad2cd73b2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Album Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"comment\": \"TESTFSDFSDTT\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/albums/album/c40e84f2-9d13-42ef-8612-90c8066b43c1",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"albums",
+										"album",
+										"c40e84f2-9d13-42ef-8612-90c8066b43c1"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Album Comment Vote",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/album/35d23eef-21db-4474-b64f-a5805908e881/vote/up",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"album",
+										"35d23eef-21db-4474-b64f-a5805908e881",
+										"vote",
+										"up"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Album Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"comment\": \"DFSDFSDFS\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/album/475f14ff-7b22-4f14-9620-958ad2cd73b2",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"album",
+										"475f14ff-7b22-4f14-9620-958ad2cd73b2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Album Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"test\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/album/475f14ff-7b22-4f14-9620-958ad2cd73b2",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"album",
+										"475f14ff-7b22-4f14-9620-958ad2cd73b2"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Artist",
+					"item": [
+						{
+							"name": "Artist Comments",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/artist",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"artist"
+									],
+									"query": [
+										{
+											"key": "",
+											"value": null,
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Artist Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/artist/c756915c-32ce-4e30-ad92-6b1d971cacc2",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"artist",
+										"c756915c-32ce-4e30-ad92-6b1d971cacc2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Artist Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"comment\": \"TESTTT\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/artists/artist/c16602d1-0140-49f0-a5cc-ec4d54f35bb8",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"artists",
+										"artist",
+										"c16602d1-0140-49f0-a5cc-ec4d54f35bb8"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Artist Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"comment\": \"DFSDFSDFS\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/artist/c756915c-32ce-4e30-ad92-6b1d971cacc2",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"artist",
+										"c756915c-32ce-4e30-ad92-6b1d971cacc2"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Artist Comment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"name\": \"test\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/artist/50c3938e-f893-4504-8102-a56b0ff3c254",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"artist",
+										"50c3938e-f893-4504-8102-a56b0ff3c254"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Artist Comment Vote",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "POST",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/comments/artist/c756915c-32ce-4e30-ad92-6b1d971cacc2/vote/up",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"comments",
+										"artist",
+										"c756915c-32ce-4e30-ad92-6b1d971cacc2",
+										"vote",
+										"up"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "oat_OA.aDRtVWR3UC1ocXNJSUcxMFVWeERkT3FuR0JKY1ZHOW5qdUZuM2ZEejMwMjg2MTg3Mw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/search?query=justin&types=track,artist,album",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"search"
+							],
+							"query": [
+								{
+									"key": "query",
+									"value": "justin"
+								},
+								{
+									"key": "types",
+									"value": "track,artist,album"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Health",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{BASE_URL}}/health",
+					"host": [
+						"{{BASE_URL}}"
+					],
+					"path": [
+						"health"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "BASE_URL_API",
+			"value": "http://127.0.0.1:3333  /api",
+			"type": "string"
+		},
+		{
+			"key": "BASE_URL",
+			"value": " http://127.0.0.1:3333",
+			"type": "string"
+		},
+		{
+			"key": "TOKEN",
+			"value": "",
+			"type": "string"
+		}
+	]
+}

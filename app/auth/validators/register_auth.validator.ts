@@ -1,4 +1,4 @@
-import User from '#auth/models/user'
+import User from '#user/models/user'
 import vine, { SimpleMessagesProvider } from '@vinejs/vine'
 
 import { FieldContext } from '@vinejs/vine/types'

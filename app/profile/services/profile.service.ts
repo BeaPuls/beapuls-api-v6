@@ -1,4 +1,4 @@
-import { default as User } from '#auth/models/user'
+import { default as User } from '#user/models/user'
 import Profile from '#profile/models/profile'
 import { inject } from '@adonisjs/fold'
 
