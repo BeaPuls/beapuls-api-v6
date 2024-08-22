@@ -10,7 +10,8 @@ export default class ArtistService {
       const newArtist = new Artist()
       newArtist.name = artist.name
       newArtist.providerItemId = artist.id
-      newArtist.providerItemImage = artist.album?.images[0].url
+      newArtist.providerItemImage =
+        artist?.images && artist?.images.length ? artist?.images[0]?.url : null
       newArtist.providerItemUri = artist.uri
       newArtist.popularity = artist.popularity
       newArtist.followers = artist.followers?.total

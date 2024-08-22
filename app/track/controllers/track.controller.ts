@@ -6,6 +6,7 @@ import { createOrUpdateTrackValidator } from '#track/validators/create_or_update
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Track from '#track/models/track'
+import { request } from 'node:http'
 
 @inject()
 export default class TrackController {
@@ -65,15 +66,28 @@ export default class TrackController {
     return ApiResponse.response({ response }, track, 'Track found successfully', 200)
   }
 
-  async findOne({ params, response }: HttpContext) {
+  async findOne({ request, params, response }: HttpContext) {
     const { id } = params
+    const { fromProvider } = request.only(['fromProvider'])
+    const searchTrackData = await request.validateUsing(createOrUpdateTrackValidator)
+
+    if (fromProvider) {
+      const created = await this.trackService.create(searchTrackData as Track)
+      if (!created) {
+        return ApiResponse.response({ response }, null, 'Track creation failed', 400)
+      }
+      return ApiResponse.response({ response }, created, 'Track found successfully', 200)
+    }
+
     if (!id) {
       throw new NotFoundException('Track id not found')
     }
+
     const track = await this.trackService.findOne(id)
     if (!track) {
       return ApiResponse.response({ response }, null, 'Track not found', 404)
     }
+
     return ApiResponse.response({ response }, track, 'Track found successfully', 200)
   }
 

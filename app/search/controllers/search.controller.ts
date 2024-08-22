@@ -7,6 +7,8 @@ import { inject } from '@adonisjs/core'
 import { ApiResponse } from '#classes/api_response'
 import Profile from '#profile/models/profile'
 import AuthProviders from '#auth/models/auth_providers'
+import console from 'node:console'
+import auth from '@adonisjs/auth/services/main'
 
 @inject()
 export default class SearchController {
@@ -43,8 +45,6 @@ export default class SearchController {
 
     if (types.includes('track')) {
       let tracks = await Track.query().whereLike('name', `%${query}%`).limit(4)
-      console.log(query)
-      console.log(tracks)
       if (tracks.length < 4 && authProviderName === 'spotify') {
         const providerTracks = await this.spotifyService.search(
           auth.user.id,
@@ -53,15 +53,21 @@ export default class SearchController {
           4 - tracks.length
         )
         let spotifyTracks = tracks.concat(providerTracks.tracks.items.slice(0, 4 - tracks.length))
-
         spotifyTracks.forEach((track) => {
           tracks.push({
+            from_provider: true,
             name: track.name,
-            albumName: track.album?.name,
-            artistName: track.artists[0]?.name,
-            providerItemUri: track.uri,
-            providerItemImage: track?.album?.images[0].url,
-            providerItemId: track.id,
+            album_name: track?.album?.name,
+            artist_name:
+              track?.artists && track?.artists.length
+                ? track?.artists.map((artist) => artist.name).join(', ')
+                : null,
+            provider_item_uri: track.uri,
+            provider_item_image:
+              track?.album?.images && track?.album?.images.length
+                ? track?.album?.images[0]?.url
+                : null,
+            provider_item_id: track.id,
           })
         })
       }
@@ -77,12 +83,14 @@ export default class SearchController {
         )
         spotifyArtists.forEach((artist) => {
           artists.push({
+            from_provider: true,
             name: artist.name,
             popularity: artist.popularity,
             followers: artist.followers?.total,
-            providerItemUri: artist.uri,
-            providerItemImage: artist?.images[0]?.url,
-            providerItemId: artist.id,
+            provider_item_uri: artist.uri,
+            provider_item_image:
+              artist?.images && artist?.images.length ? artist?.images[0]?.url : null,
+            provider_item_id: artist.id,
           })
         })
       }
@@ -96,11 +104,16 @@ export default class SearchController {
         let spotifyAlbums = albums.concat(providerAlbums.albums.items.slice(0, 4 - albums.length))
         spotifyAlbums.forEach((album) => {
           albums.push({
+            from_provider: true,
             name: album.name,
-            artistName: album.artists[0].name,
-            providerItemUri: album.uri,
-            providerItemImage: album?.images[0]?.url,
-            providerItemId: album.id,
+            artist_name:
+              album?.artists && album?.artists.length
+                ? album?.artists.map((artist) => artist.name).join(', ')
+                : null,
+            provider_item_uri: album.uri,
+            provider_item_image:
+              album?.images && album?.images.length ? album?.images[0]?.url : null,
+            provider_item_id: album.id,
           })
         })
       }

@@ -14,6 +14,7 @@ export interface AlbumData {
   providerTypeId?: string | undefined
   upVote?: number | undefined
   downVote?: number | undefined
+  fromProvider?: boolean | undefined
 }
 
 export interface FindBySearchAlbumData {

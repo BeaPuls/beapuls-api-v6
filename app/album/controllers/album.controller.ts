@@ -14,13 +14,13 @@ export default class AlbumController {
   private serializeAlbumData(data: any) {
     return {
       name: data.name as string,
-      artistName: data.artist_name as string,
-      providerItemUri: data.provider_item_uri as string,
-      providerItemImage: data.provider_item_image as string,
-      providerItemId: data.provider_item_id as string,
-      providerTypeId: data.provider_type_id as string | undefined,
-      upVote: data.up_vote as number | undefined,
-      downVote: data.down_vote as number | undefined,
+      artist_name: data.artist_name as string,
+      provider_item_uri: data.provider_item_uri as string,
+      provider_item_image: data.provider_item_image as string,
+      provider_item_id: data.provider_item_id as string,
+      provider_type_id: data.provider_type_id as string | undefined,
+      up_vote: data.up_vote as number | undefined,
+      down_vote: data.down_vote as number | undefined,
     }
   }
 
@@ -52,9 +52,12 @@ export default class AlbumController {
   // }
 
   async findOneByProviderId({ params, response }: HttpContext) {
-    const { providerId } = params
+    const { providerId, providerTypeId } = params
     if (!providerId) {
       throw new NotFoundException('Provider id not found')
+    }
+    if (!providerTypeId) {
+      throw new NotFoundException('Provider type id not found')
     }
 
     const album = await this.albumService.findOneByProviderId(providerId)
@@ -64,8 +67,19 @@ export default class AlbumController {
     return ApiResponse.response({ response }, album, 'Album found successfully', 200)
   }
 
-  async findOne({ params, response }: HttpContext) {
+  async findOne({ request, params, response }: HttpContext) {
     const { id } = params
+    const { fromProvider } = request.only(['fromProvider'])
+    const searchAlbumData = await request.validateUsing(createOrUpdateAlbumValidator)
+
+    if (fromProvider) {
+      const created = await this.albumService.create(searchAlbumData as Album)
+      if (!created) {
+        return ApiResponse.response({ response }, null, 'Album creation failed', 400)
+      }
+      return ApiResponse.response({ response }, created, 'Album found successfully', 200)
+    }
+
     if (!id) {
       throw new NotFoundException('Album id not found')
     }
@@ -74,6 +88,7 @@ export default class AlbumController {
     if (!album) {
       return ApiResponse.response({ response }, null, 'Album not found', 404)
     }
+
     return ApiResponse.response({ response }, album, 'Album found successfully', 200)
   }
 

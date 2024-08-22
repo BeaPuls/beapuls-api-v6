@@ -14,6 +14,7 @@ export interface TrackData {
   providerItemId: string
   upVote?: number | undefined
   downVote?: number | undefined
+  fromProvider?: boolean | undefined
 }
 
 export interface FindBySearchTrackData {

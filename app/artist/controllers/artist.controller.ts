@@ -6,6 +6,7 @@ import { createOrUpdateArtistValidator } from '#artist/validators/create_or_upda
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Artist from '#artist/models/artist'
+import { request } from 'node:http'
 
 @inject()
 export default class ArtistController {
@@ -64,15 +65,28 @@ export default class ArtistController {
     return ApiResponse.response({ response }, artist, 'Artist found successfully', 200)
   }
 
-  async findOne({ params, response }: HttpContext) {
+  async findOne({ request, params, response }: HttpContext) {
     const { id } = params
+    const { fromProvider } = request.only(['fromProvider'])
+    const searchArtistData = await request.validateUsing(createOrUpdateArtistValidator)
+
+    if (fromProvider) {
+      const created = await this.artistService.create(searchArtistData as Artist)
+      if (!created) {
+        return ApiResponse.response({ response }, null, 'Artist creation failed', 400)
+      }
+      return ApiResponse.response({ response }, created, 'Artist found successfully', 200)
+    }
+
     if (!id) {
       throw new NotFoundException('Artist id not found')
     }
+
     const artist = await this.artistService.findOne(id)
     if (!artist) {
       return ApiResponse.response({ response }, null, 'Artist not found', 404)
     }
+
     return ApiResponse.response({ response }, artist, 'Artist found successfully', 200)
   }
 

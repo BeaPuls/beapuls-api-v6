@@ -9,9 +9,13 @@ export default class TrackService {
       const newTrack = new Track()
       newTrack.name = track.name
       newTrack.providerItemId = track.id
-      newTrack.providerItemImage = track?.album?.images[0].url
+      newTrack.providerItemImage =
+        track?.album?.images && track?.album?.images.length ? track?.album?.images[0]?.url : null
       newTrack.providerItemUri = track.uri
-      newTrack.artistName = track.artists?.name
+      newTrack.artistName =
+        track?.artists && track?.artists.length
+          ? track?.artists.map((artist) => artist.name).join(', ')
+          : null
       newTrack.albumName = track.album?.name
       newTrack.profileId = profileId
       await newTrack.save()
