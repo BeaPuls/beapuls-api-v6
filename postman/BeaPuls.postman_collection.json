@@ -457,7 +457,7 @@
 					"response": []
 				},
 				{
-					"name": "Album",
+					"name": "Album Get Or Post",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -469,16 +469,25 @@
 								}
 							]
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"name\": \"Fds (Fin de Semana)\",\n    \"artist_name\": \"Carit Br, Oviña, Frank Fernandez\",\n    \"provider_item_uri\": \"spotify:album:2BnfKxtvQlZFOoIcePr1QJ\",\n    \"provider_item_image\": \"https://i.scdn.co/image/ab67616d0000b2738913380f2f0fa08834ca19ec\",\n    \"provider_item_id\": \"2BnfKxtvQlZFOoIcePr1QJ\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "{{BASE_URL_API}}/albums/c40e84f2-9d13-42ef-8612-90c8066b43c1",
+							"raw": "{{BASE_URL_API}}/albums/3fa554f9-0d4a-482b-84a8-22ec08355f05",
 							"host": [
 								"{{BASE_URL_API}}"
 							],
 							"path": [
 								"albums",
-								"c40e84f2-9d13-42ef-8612-90c8066b43c1"
+								"3fa554f9-0d4a-482b-84a8-22ec08355f05"
 							]
 						}
 					},
@@ -727,7 +736,7 @@
 					"response": []
 				},
 				{
-					"name": "Artist",
+					"name": "Artist Get Or Post",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -739,16 +748,22 @@
 								}
 							]
 						},
-						"method": "GET",
+						"method": "POST",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL_API}}/artists/27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13",
+							"raw": "{{BASE_URL_API}}/artists/27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13?fromProvider=true",
 							"host": [
 								"{{BASE_URL_API}}"
 							],
 							"path": [
 								"artists",
 								"27c7ad3c-1c6d-4d4d-b87f-95f8dff8bc13"
+							],
+							"query": [
+								{
+									"key": "fromProvider",
+									"value": "true"
+								}
 							]
 						}
 					},
@@ -990,7 +1005,7 @@
 					"response": []
 				},
 				{
-					"name": "Track",
+					"name": "Track Get Or Post",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1005,13 +1020,19 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL_API}}/tracks/a6cc6389-023d-4bc4-86c2-e5063c294990",
+							"raw": "{{BASE_URL_API}}/tracks/a6cc6389-023d-4bc4-86c2-e5063c294990?fromProvider=true",
 							"host": [
 								"{{BASE_URL_API}}"
 							],
 							"path": [
 								"tracks",
 								"a6cc6389-023d-4bc4-86c2-e5063c294990"
+							],
+							"query": [
+								{
+									"key": "fromProvider",
+									"value": "true"
+								}
 							]
 						}
 					},
@@ -1876,7 +1897,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "oat_OA.aDRtVWR3UC1ocXNJSUcxMFVWeERkT3FuR0JKY1ZHOW5qdUZuM2ZEejMwMjg2MTg3Mw",
+									"value": "oat_OQ.RDBuMklSUXc2TlVaWmpKOS1fdFZ2NTlzV2NfZEVQUm9HY25kV2hvVzM0ODEyMTcxOTQ",
 									"type": "string"
 								}
 							]
@@ -1884,7 +1905,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL_API}}/search?query=justin&types=track,artist,album",
+							"raw": "{{BASE_URL_API}}/search?query=fds&types=track,artist,album",
 							"host": [
 								"{{BASE_URL_API}}"
 							],
@@ -1894,7 +1915,7 @@
 							"query": [
 								{
 									"key": "query",
-									"value": "justin"
+									"value": "fds"
 								},
 								{
 									"key": "types",
