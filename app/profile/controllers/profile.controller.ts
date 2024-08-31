@@ -78,7 +78,7 @@ export default class ProfileController {
     const profile = (await Profile.query().where('user_id', user.id).first()) ?? new Profile()
 
     profile.username = data.username
-    profile.dateOfBirth = DateTime.fromJSDate(data.dateOfBirth.toJSDate())
+    profile.dateOfBirth = DateTime.fromJSDate(data.dateOfBirth)
     profile.description = data.description
     profile.genderId = data.genderId
     profile.userId = user.id
