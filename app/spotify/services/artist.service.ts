@@ -33,14 +33,22 @@ export default class ArtistService {
     return mappdArtists
   }
 
-  async updateFavoriteArtists(profileId: Profile['id'], artistIds: Track['id'][]) {
-    // TODO ??
-    const markFavorite = await Artist.query()
-      .where('profile_id', profileId)
-      .whereIn('spotify_id', artistIds)
+  async updateFavoriteArtists(profileId: Profile['id'], artists: any[]) {
+    const deletedArtists = await Artist.query().where('profile_id', profileId).delete()
 
-    return {
-      data: markFavorite,
+    for (const artist of artists) {
+      await Artist.updateOrCreate(
+        { profileId, providerItemId: artist.id },
+        {
+          name: artist.name,
+          providerItemId: artist.id,
+          providerItemImage:
+            artist?.images && artist?.images.length ? artist?.images[0]?.url : null,
+          providerItemUri: artist.uri,
+          popularity: artist.popularity,
+          followers: artist.followers?.total,
+        }
+      )
     }
   }
 }

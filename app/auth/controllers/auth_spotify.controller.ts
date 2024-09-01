@@ -102,17 +102,21 @@ export default class SpotifyController {
   }
 
   private async initializeUserData(profileId: string, userId: string) {
-    const trackExist = await Track.query().where('profile_id', userId)
+    const trackExist = await Track.query().where('profile_id', profileId)
+    const topTracks = await this.spotifyService.getTracks(userId, 5)
 
     if (!trackExist.length) {
-      const topTracks = await this.spotifyService.getTracks(userId, 5)
       await this.trackService.saveTracks(profileId, topTracks)
+    } else {
+      await this.trackService.updateFavoriteTracks(profileId, topTracks)
     }
 
-    const artistExist = await Artist.query().where('profile_id', userId)
+    const artistExist = await Artist.query().where('profile_id', profileId)
+    const topArtists = await this.spotifyService.getArtists(userId, 5)
     if (!artistExist.length) {
-      const topArtists = await this.spotifyService.getArtists(userId, 5)
       await this.artistService.saveArtist(profileId, topArtists)
+    } else {
+      await this.artistService.updateFavoriteArtists(profileId, topArtists)
     }
   }
 }

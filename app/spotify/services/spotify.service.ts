@@ -21,6 +21,7 @@ export default class SpotifyService {
 
       if (resp.status === 200) {
         return resp.data.items
+        // return []
       } else {
         throw new Error(`Unexpected status code: ${resp.status}`)
       }
@@ -65,6 +66,7 @@ export default class SpotifyService {
 
       if (resp.status === 200) {
         return resp.data.items
+        // return []
       } else {
         throw new Error(`Unexpected status code: ${resp.status}`)
       }

@@ -14,7 +14,7 @@ export default class TrackService {
       newTrack.providerItemUri = track.uri
       newTrack.artistName =
         track?.artists && track?.artists.length
-          ? track?.artists.map((artist) => artist.name).join(', ')
+          ? track?.artists.map((artist: any) => artist.name).join(', ')
           : null
       newTrack.albumName = track.album?.name
       newTrack.profileId = profileId
@@ -36,14 +36,20 @@ export default class TrackService {
     return mappdTracks
   }
 
-  async updateFavoriteTracks(profileId: Profile['id'], trackIds: Track['id'][]) {
-    // TODO ??
-    const markFavorite = await Track.query()
-      .where('profile_id', profileId)
-      .whereIn('spotify_id', trackIds)
+  async updateFavoriteTracks(profileId: Profile['id'], tracks: any[]) {
+    const deletedTracks = await Track.query().where('profile_id', profileId).delete()
 
-    return {
-      data: markFavorite,
+    for (const track of tracks) {
+      await Track.updateOrCreate(
+        { profileId, providerItemId: track.id },
+        {
+          name: track.name,
+          providerItemImage: track.album?.images?.[0]?.url || null,
+          providerItemUri: track.uri,
+          artistName: track.artists?.map((artist: any) => artist.name).join(', ') || null,
+          albumName: track.album?.name,
+        }
+      )
     }
   }
 }
