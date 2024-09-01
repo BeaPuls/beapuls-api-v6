@@ -4,6 +4,7 @@ import {
   afterCreate,
   beforeCreate,
   column,
+  hasMany,
   hasOne,
   manyToMany,
 } from '@adonisjs/lucid/orm'
@@ -13,11 +14,12 @@ import Profile from '#profile/models/profile'
 import { withAuthFinder } from '@adonisjs/auth'
 import { AccessToken, DbAccessTokensProvider } from '@adonisjs/auth/access_tokens'
 import { compose } from '@adonisjs/core/helpers'
-import type { HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
+import type { HasMany, HasOne, ManyToMany } from '@adonisjs/lucid/types/relations'
 import { randomUUID } from 'node:crypto'
 import Role from './role.js'
 import { RoleName } from '#user/models/role'
 import NotFoundException from '#exceptions/not_found.exception'
+import AuthProvider from '#auth/models/auth_providers'
 
 const AuthFinder = withAuthFinder(() => hash.use('scrypt'), {
   uids: ['email'],
@@ -69,6 +71,9 @@ export default class User extends compose(BaseModel, AuthFinder) {
     pivotRelatedForeignKey: 'role_id',
   })
   declare roles: ManyToMany<typeof Role>
+
+  @hasMany(() => AuthProvider)
+  declare authProviders: HasMany<typeof AuthProvider>
 
   /**
    * Profile relation

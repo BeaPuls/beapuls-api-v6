@@ -2,6 +2,7 @@ import { default as User } from '#user/models/user'
 import { loginAuthValidator } from '#auth/validators/login_auth.validator'
 import { registerAuthValidator } from '#auth/validators/register_auth.validator'
 import { HttpContext } from '@adonisjs/core/http'
+import AuthProviders from '#auth/models/auth_providers'
 
 export default class AuthController {
   async login({ request, response }: HttpContext) {
@@ -37,6 +38,7 @@ export default class AuthController {
   async logout({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     await User.accessTokens.delete(user, user.currentAccessToken.identifier)
+    await AuthProviders.query().where('user_id', user.id).delete()
     return response.created({
       status: true,
       message: 'User successfully logout!',

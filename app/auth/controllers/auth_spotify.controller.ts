@@ -29,7 +29,6 @@ export default class SpotifyController {
 
   async useSpotify(ally: AllyService) {
     const spotify = ally.use('spotify').stateless()
-
     /**
      * User has explicitly denied the login request
      */
@@ -87,11 +86,12 @@ export default class SpotifyController {
 
     this.initializeUserData(profile.id, user.id)
     const authToken = await this.generateUserToken(user)
-    response.redirect(this.success(authToken, user))
+
+    return response.redirect(this.success(authToken, user))
   }
 
   private success(accessToken: AccessToken, user: User) {
-    const url = new URL(env.get('SPOTIFY_SUCCESS_URL', `${env.get('BASE_API_URL')}/auth/success`))
+    const url = new URL(env.get('EXPO_URL') as string)
     url.searchParams.append('userToken', accessToken.value!.release())
     url.searchParams.append('userId', user.id)
     return url.toString()
