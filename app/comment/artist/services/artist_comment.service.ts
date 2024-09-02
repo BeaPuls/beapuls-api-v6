@@ -3,6 +3,7 @@ import ArtistComment from '#comment/artist/models/artist_comment'
 import NotFoundException from '#exceptions/not_found.exception'
 import { inject } from '@adonisjs/core'
 import ArtistCommentVote from '../models/artist_comment_vote.js'
+import Artist from '#artist/models/artist'
 
 @inject()
 export class ArtistCommentService {
@@ -93,5 +94,13 @@ export class ArtistCommentService {
     await comment.save()
 
     return comment
+  }
+
+  async getLastUserComments(userId: string, limit: number) {
+    return ArtistComment.query().where('user_id', userId).limit(limit)
+  }
+
+  async getArtistData(artistId: string) {
+    return Artist.find(artistId)
   }
 }

@@ -3,6 +3,7 @@ import AlbumComment from '#comment/album/models/album_comment'
 import NotFoundException from '#exceptions/not_found.exception'
 import { inject } from '@adonisjs/core'
 import AlbumCommentVote from '../models/album_comment_vote.js'
+import Album from '#album/models/album'
 
 @inject()
 export class AlbumCommentService {
@@ -93,5 +94,13 @@ export class AlbumCommentService {
     await comment.save()
 
     return comment
+  }
+
+  async getLastUserComments(userId: string, limit: number) {
+    return AlbumComment.query().where('user_id', userId).limit(limit)
+  }
+
+  async getAlbumData(albumId: string) {
+    return Album.find(albumId)
   }
 }

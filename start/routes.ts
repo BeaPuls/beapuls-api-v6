@@ -22,6 +22,7 @@ const AlbumCommentController = () => import('#comment/album/controllers/album_co
 const ArtistCommentController = () =>
   import('#comment/artist/controllers/artist_comment.controller')
 const SearchController = () => import('#search/controllers/search.controller')
+const CommentController = () => import('#comment/controllers/comment.controller')
 
 router.get('/', async ({ response }: HttpContext) =>
   response.ok({ uptime: Math.round(process.uptime()) })
@@ -122,6 +123,8 @@ router
 
         router
           .group(() => {
+            router.get('user/last-comments', [CommentController, 'getLastUserComments'])
+
             router.group(() => {
               router.get('track', [TrackCommentController, 'findAll'])
               router.get('track/:id', [TrackCommentController, 'findOne'])

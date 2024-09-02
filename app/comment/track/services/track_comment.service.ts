@@ -3,6 +3,7 @@ import TrackComment from '#comment/track/models/track_comment'
 import NotFoundException from '#exceptions/not_found.exception'
 import { inject } from '@adonisjs/core'
 import TrackCommentVote from '../models/track_comment_vote.js'
+import Track from '#track/models/track'
 
 @inject()
 export class TrackCommentService {
@@ -93,5 +94,13 @@ export class TrackCommentService {
     await comment.save()
 
     return comment
+  }
+
+  async getLastUserComments(userId: string, limit: number) {
+    return TrackComment.query().where('user_id', userId).limit(limit)
+  }
+
+  async getTrackData(trackId: string) {
+    return Track.find(trackId)
   }
 }
