@@ -27,7 +27,7 @@ export default class AlbumController {
   async create({ request, response }: HttpContext) {
     const createAlbum = await request.validateUsing(createOrUpdateAlbumValidator)
     const albumData = this.serializeAlbumData(createAlbum)
-    const created = await this.albumService.create(albumData as Album)
+    const created = await this.albumService.create(albumData as unknown as Album)
     if (!created) {
       return ApiResponse.response({ response }, null, 'Album creation failed', 400)
     }
@@ -73,7 +73,7 @@ export default class AlbumController {
     const searchAlbumData = await request.validateUsing(createOrUpdateAlbumValidator)
 
     if (fromProvider) {
-      const created = await this.albumService.create(searchAlbumData as Album)
+      const created = await this.albumService.create(searchAlbumData as unknown as Album)
       if (!created) {
         return ApiResponse.response({ response }, null, 'Album creation failed', 400)
       }
@@ -101,7 +101,7 @@ export default class AlbumController {
 
     const updateAlbum = await request.validateUsing(createOrUpdateAlbumValidator)
     const albumData = this.serializeAlbumData(updateAlbum)
-    const updated = await this.albumService.update(id, albumData as Album)
+    const updated = await this.albumService.update(id, albumData as unknown as Album)
     if (!updated) {
       return ApiResponse.response({ response }, null, 'Album update failed', 400)
     }

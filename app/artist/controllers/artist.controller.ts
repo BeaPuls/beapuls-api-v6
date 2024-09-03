@@ -2,11 +2,9 @@ import { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/fold'
 import { ArtistService } from '#artist/services/artist.service'
 import { createOrUpdateArtistValidator } from '#artist/validators/create_or_update_artist.validator'
-// import { findBySearchArtistValidator } from '#artist/validators/find_by_search_artist_validator'
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Artist from '#artist/models/artist'
-import { request } from 'node:http'
 
 @inject()
 export default class ArtistController {
@@ -71,7 +69,7 @@ export default class ArtistController {
     const searchArtistData = await request.validateUsing(createOrUpdateArtistValidator)
 
     if (fromProvider) {
-      const created = await this.artistService.create(searchArtistData as Artist)
+      const created = await this.artistService.create(searchArtistData as unknown as Artist)
       if (!created) {
         return ApiResponse.response({ response }, null, 'Artist creation failed', 400)
       }
