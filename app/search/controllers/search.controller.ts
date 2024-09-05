@@ -15,7 +15,7 @@ export default class SearchController {
   constructor(private spotifyService: SpotifyService) {}
 
   async search({ auth, request, response }: HttpContext) {
-    const userId = auth.user?.id ?? null
+    const userId = auth.user.id
     const { query, types } = request.only(['query', 'types'])
 
     const results = {
@@ -25,9 +25,11 @@ export default class SearchController {
       albums: [] as Album[],
     }
 
-    const profiles = await Profile.query().whereLike('username', `%${query}%`).limit(3)
-    if (profiles.length > 0) {
-      results.profiles = profiles
+    if (types.includes('profile')) {
+      const profiles = await Profile.query().whereLike('username', `%${query}%`).limit(3)
+      if (profiles.length > 0) {
+        results.profiles = profiles
+      }
     }
 
     // let searchResults = []
@@ -47,7 +49,7 @@ export default class SearchController {
       let tracks = await Track.query().whereLike('name', `%${query}%`).limit(4)
       if (tracks.length < 4 && authProviderName === 'spotify') {
         const providerTracks = await this.spotifyService.search(
-          auth.user.id,
+          userId,
           query,
           ['track'],
           4 - tracks.length
