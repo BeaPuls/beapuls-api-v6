@@ -66,7 +66,7 @@ router
         router
           .group(() => {
             router.get('profile', [ProfileController, 'getUserProfile'])
-            router.post('profile', [ProfileController, 'createUserProfile'])
+            router.post('profile', [ProfileController, 'createOrUpdateUserProfile'])
             router.get('profile/avatar', [ProfileController, 'getUserAvatar'])
             router.post('profile/avatar', [ProfileController, 'uploadUserAvatar'])
           })

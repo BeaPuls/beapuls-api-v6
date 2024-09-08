@@ -22,9 +22,8 @@ const fields = {
  */
 async function unique(value: unknown, options: Options, field: FieldContext) {
   /**
-   * We do not want to deal with non-string
-   * values. The "string" rule will handle the
-   * the validation.
+   * We don't want to deal with non-string values.
+   * The "string" rule will handle the validation.
    */
   if (typeof value !== 'string') {
     return
@@ -51,7 +50,8 @@ vine.messagesProvider = new SimpleMessagesProvider(
 
 export const createOrUpdateProfileValidator = vine.compile(
   vine.object({
-    username: vine.string().use(uniqueRule({ table: 'users', column: 'username' })),
+    // username: vine.string().use(uniqueRule({ table: 'users', column: 'username' })),
+    username: vine.string(),
     date_of_birth: vine.date({ formats: ['YYYY-MM-DD'] }),
     description: vine.string().optional(),
     gender_id: vine.string(),

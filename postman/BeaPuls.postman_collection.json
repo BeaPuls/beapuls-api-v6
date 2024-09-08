@@ -79,7 +79,7 @@
 										},
 										{
 											"key": "password",
-											"value": "quentin1",
+											"value": "password",
 											"type": "text"
 										}
 									]
@@ -294,7 +294,7 @@
 					"response": []
 				},
 				{
-					"name": "Profile",
+					"name": "CreateOrUpdate Profile",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -1940,7 +1940,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "oat_OQ.RDBuMklSUXc2TlVaWmpKOS1fdFZ2NTlzV2NfZEVQUm9HY25kV2hvVzM0ODEyMTcxOTQ",
+									"value": "{{TOKEN}}",
 									"type": "string"
 								}
 							]
@@ -1948,7 +1948,7 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL_API}}/search?query=fds&types=track,artist,album",
+							"raw": "{{BASE_URL_API}}/search?query=-&types=track,artist,album,profile",
 							"host": [
 								"{{BASE_URL_API}}"
 							],
@@ -1958,11 +1958,11 @@
 							"query": [
 								{
 									"key": "query",
-									"value": "fds"
+									"value": "-"
 								},
 								{
 									"key": "types",
-									"value": "track,artist,album"
+									"value": "track,artist,album,profile"
 								}
 							]
 						}
@@ -2022,7 +2022,7 @@
 	"variable": [
 		{
 			"key": "BASE_URL_API",
-			"value": "http://192.168.1.30:3333/api",
+			"value": "http://192.168.1.14:3333/api",
 			"type": "string"
 		},
 		{
