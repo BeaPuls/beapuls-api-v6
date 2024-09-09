@@ -5,6 +5,7 @@ import { ArtistCommentService } from '#comment/artist/services/artist_comment.se
 import { AlbumCommentService } from '#comment/album/services/album_comment.service'
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
+import console from 'node:console'
 // import NotFoundException from '#exceptions/not_found.exception'
 
 @inject()
@@ -15,6 +16,17 @@ export default class CommentController {
     private readonly albumCommentService: AlbumCommentService
   ) {}
 
+  private getCommentData(data: any) {
+    return {
+      id: data.id,
+      entityId: data.trackId ? data.trackId : data.artistId ? data.artistId : data.albumId,
+      comment: data.comment,
+      upVote: data.upVote,
+      downVote: data.downVote,
+      createdAt: data.createdAt,
+      updatedAt: data.updatedAt,
+    }
+  }
   async getLastUserComments({ auth, request, response }: HttpContext) {
     const user = await auth.getUserOrFail()
     const { limit = 10 } = request.qs()
@@ -28,20 +40,23 @@ export default class CommentController {
       const formattedComments = await Promise.all([
         ...trackComments.map(async (comment) => ({
           type: 'track',
-          entity: await this.trackCommentService.getTrackData(comment.trackId),
+          // entity: await this.trackCommentService.getTrackData(comment.trackId),
+          comment: this.getCommentData(comment),
         })),
         ...artistComments.map(async (comment) => ({
           type: 'artist',
-          entity: await this.artistCommentService.getArtistData(comment.artistId),
+          // entity: await this.artistCommentService.getArtistData(comment.artistId),
+          comment: this.getCommentData(comment),
         })),
         ...albumComments.map(async (comment) => ({
           type: 'album',
-          entity: await this.albumCommentService.getAlbumData(comment.albumId),
+          // entity: await this.albumCommentService.getAlbumData(comment.albumId),
+          comment: this.getCommentData(comment),
         })),
       ])
 
       const sortedComments = formattedComments
-        .sort((a, b) => b.entity.createdAt - a.entity.createdAt)
+        .sort((a, b) => b.comment.createdAt - a.comment.createdAt)
         .slice(0, 10)
 
       if (sortedComments.length === 0) {

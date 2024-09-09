@@ -103,4 +103,8 @@ export class TrackCommentService {
   async getTrackData(trackId: string) {
     return Track.find(trackId)
   }
+
+  async getCommentData(commentId: string) {
+    return TrackComment.find(commentId)
+  }
 }
