@@ -62,6 +62,7 @@
     "@adonisjs/auth": "^9.1.1",
     "@adonisjs/core": "^6.2.1",
     "@adonisjs/cors": "^2.2.1",
+    "@adonisjs/drive": "^3.2.0",
     "@adonisjs/lucid": "^20.1.0",
     "@adonisjs/session": "^7.1.1",
     "@vinejs/vine": "^2.0.0",

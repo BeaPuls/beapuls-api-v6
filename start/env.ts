@@ -45,4 +45,11 @@ export default await Env.create(new URL('../', import.meta.url), {
 
   // project
   BASE_API_URL: Env.schema.string({ format: 'url' }),
+
+  /*
+  |----------------------------------------------------------
+  | Variables for configuring the drive package
+  |----------------------------------------------------------
+  */
+  DRIVE_DISK: Env.schema.enum(['fs'] as const)
 })

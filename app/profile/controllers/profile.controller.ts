@@ -2,14 +2,14 @@ import Profile from '#profile/models/profile'
 import { createOrUpdateProfileValidator } from '#profile/validators/create_or_update_profile.validator'
 import { uploadProfileAvatarValidator } from '#profile/validators/upload_profile_avatar.validator'
 import { inject } from '@adonisjs/core'
-import { MultipartFile } from '@adonisjs/core/bodyparser'
 import { HttpContext } from '@adonisjs/core/http'
-import app from '@adonisjs/core/services/app'
+import drive from '@adonisjs/drive/services/main'
 import { DateTime } from 'luxon'
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import { ErrorMessage } from '#exceptions/error_message'
 import User from '#user/models/user'
+import { cuid } from '@adonisjs/core/helpers'
 
 // type UserInfo = {
 //   id: number | string
@@ -139,23 +139,22 @@ export default class ProfileController {
     )
   }
 
-  private buildAvatarFileName(user: User, file: MultipartFile) {
-    return `${user.id}.avatar.${file.extname}`
-  }
+  // private buildAvatarFileName(user: User, file: MultipartFile) {
+  //   return `${user.id}.avatar.${file.extname}`
+  // }
 
-  private async saveUserAvatarImage(user: User, file: MultipartFile): Promise<void> {
-    const fileName = this.buildAvatarFileName(user, file)
-    await file.move(app.makePath('uploads'), {
-      name: fileName,
-      overwrite: true,
-    })
+  private async saveUserAvatarImage(user: User, file: any): Promise<void> {
+    // const fileName = this.buildAvatarFileName(user, file)
+    const fileName = `${cuid()}.${file.extname}`
+    const key = `uploads/${fileName}`
+    await file.moveToDisk(key)
 
     const profile = await Profile.updateOrCreate(
       {
         userId: user.id,
       },
       {
-        avatar: fileName,
+        avatar: key,
       }
     )
 
@@ -174,7 +173,7 @@ export default class ProfileController {
     if (!avatar) {
       throw new NotFoundException(ErrorMessage.PROFILE_AVATAR_NOT_FOUND)
     }
-    const absolutePath = app.makePath('uploads', avatar)
-    ApiResponse.response({ response }, absolutePath, 'Profile avatar fetched successfully', 200)
+    const url = await drive.use().getUrl(avatar)
+    ApiResponse.response({ response }, url, 'Profile avatar fetched successfully', 200)
   }
 }
