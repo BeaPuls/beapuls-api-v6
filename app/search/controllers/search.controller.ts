@@ -7,14 +7,13 @@ import { inject } from '@adonisjs/core'
 import { ApiResponse } from '#classes/api_response'
 import Profile from '#profile/models/profile'
 import AuthProviders from '#auth/models/auth_providers'
-import auth from '@adonisjs/auth/services/main'
 
 @inject()
 export default class SearchController {
   constructor(private spotifyService: SpotifyService) {}
 
-  async search({ auth: authInstance, request, response }: HttpContext) {
-    const userId = authInstance?.user?.id ?? null
+  async search({ auth, request, response }: HttpContext) {
+    const userId = auth?.user?.id ?? null
     const { query, types } = request.only(['query', 'types'])
 
     if (!userId) {
