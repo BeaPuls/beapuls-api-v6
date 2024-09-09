@@ -2,11 +2,9 @@ import { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/fold'
 import { TrackService } from '#track/services/track.service'
 import { createOrUpdateTrackValidator } from '#track/validators/create_or_update_track.validator'
-// import { findBySearchTrackValidator } from '#track/validators/find_by_search_track_validator'
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Track from '#track/models/track'
-import { request } from 'node:http'
 
 @inject()
 export default class TrackController {
@@ -14,6 +12,7 @@ export default class TrackController {
 
   private serializeTrackData(data: any) {
     return {
+      id: data.id as string,
       name: data.name as string,
       albumName: data.album_name as string | undefined,
       artistName: data.artist_name as string,
@@ -45,15 +44,6 @@ export default class TrackController {
     return ApiResponse.response({ response }, tracks, 'Tracks found successfully', 200)
   }
 
-  // async findBySearch({ request, response }: HttpContext) {
-  //   const findBySearchTrack = await request.validateUsing(findBySearchTrackValidator)
-  //   const track = await this.trackService.findBySearch(findBySearchTrack)
-  //   if (!track) {
-  //     return ApiResponse.response({ response }, null, 'Track not found', 404)
-  //   }
-  //   return ApiResponse.response({ response }, track, 'Track found successfully', 200)
-  // }
-
   async findOneByProviderId({ params, response }: HttpContext) {
     const { providerId } = params
     if (!providerId) {
@@ -66,28 +56,19 @@ export default class TrackController {
     return ApiResponse.response({ response }, track, 'Track found successfully', 200)
   }
 
-  async findOne({ request, params, response }: HttpContext) {
-    const { id } = params
-    const { fromProvider } = request.only(['fromProvider'])
-    const searchTrackData = await request.validateUsing(createOrUpdateTrackValidator)
+  async findOneOrCreate({ request, params, response }: HttpContext) {
+    const { providerItemId } = params
 
-    if (fromProvider) {
-      const created = await this.trackService.create(searchTrackData as Track)
-      if (!created) {
+    let track = await this.trackService.findOneByProviderId(providerItemId)
+
+    if (!track) {
+      const searchTrackData = await request.validateUsing(createOrUpdateTrackValidator)
+      const serializedTrack = this.serializeTrackData(searchTrackData)
+      track = await this.trackService.create(serializedTrack as Track)
+      if (!track) {
         return ApiResponse.response({ response }, null, 'Track creation failed', 400)
       }
-      return ApiResponse.response({ response }, created, 'Track found successfully', 200)
     }
-
-    if (!id) {
-      throw new NotFoundException('Track id not found')
-    }
-
-    const track = await this.trackService.findOne(id)
-    if (!track) {
-      return ApiResponse.response({ response }, null, 'Track not found', 404)
-    }
-
     return ApiResponse.response({ response }, track, 'Track found successfully', 200)
   }
 

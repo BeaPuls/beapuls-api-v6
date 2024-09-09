@@ -14,13 +14,14 @@
       "#controllers/*": ["./app/controllers/*.js"],
       "#exceptions/*": ["./app/exceptions/*.js"],
       "#models/*": ["./app/auth/models/*.js"],
-      "#services/*": ["./app/services/*.js"],
+      "#services/*": ["./services/*.ts"],
       "#listeners/*": ["./app/listeners/*.js"],
       "#events/*": ["./app/events/*.js"],
       "#middleware/*": ["./app/middleware/*.js"],
       "#validators/*": ["./app/auth/validators/*.js"],
       "#start/*": ["./start/*.js"],
       "#config/*": ["./config/*.js"]
+
     }
   }
 }

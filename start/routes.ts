@@ -84,7 +84,7 @@ router
 
         router.group(() => {
           router.get('albums', [AlbumController, 'findAll'])
-          router.post('albums/:id', [AlbumController, 'findOne'])
+          router.post('albums/:providerItemId', [AlbumController, 'findOneOrCreate'])
           router.post('albums', [AlbumController, 'create']).use(middleware.role(['Admin']))
           router.put('albums/:id', [AlbumController, 'update']).use(middleware.role(['Admin']))
           router.delete('albums/:id', [AlbumController, 'remove']).use(middleware.role(['Admin']))
@@ -97,7 +97,7 @@ router
 
         router.group(() => {
           router.get('artists', [ArtistController, 'findAll'])
-          router.post('artists/:id', [ArtistController, 'findOne'])
+          router.post('artists/:providerItemId', [ArtistController, 'findOneOrCreate'])
           router.post('artists', [ArtistController, 'create']).use(middleware.role(['Admin']))
           router.put('artists/:id', [ArtistController, 'update']).use(middleware.role(['Admin']))
           router.delete('artists/:id', [ArtistController, 'remove']).use(middleware.role(['Admin']))
@@ -110,7 +110,7 @@ router
 
         router.group(() => {
           router.get('tracks', [TrackController, 'findAll'])
-          router.post('tracks/:id', [TrackController, 'findOne'])
+          router.post('tracks/:providerItemId', [TrackController, 'findOneOrCreate'])
           router.post('tracks', [TrackController, 'create']).use(middleware.role(['Admin']))
           router.put('tracks/:id', [TrackController, 'update']).use(middleware.role(['Admin']))
           router.delete('tracks/:id', [TrackController, 'remove']).use(middleware.role(['Admin']))

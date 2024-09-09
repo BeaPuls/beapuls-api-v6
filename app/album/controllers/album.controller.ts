@@ -2,7 +2,6 @@ import { HttpContext } from '@adonisjs/core/http'
 import { inject } from '@adonisjs/fold'
 import { AlbumService } from '#album/services/album.service'
 import { createOrUpdateAlbumValidator } from '#album/validators/create_or_update_album.validator'
-// import { findBySearchAlbumValidator } from '#album/validators/find_by_search_album.validator'
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Album from '#album/models/album'
@@ -13,6 +12,7 @@ export default class AlbumController {
 
   private serializeAlbumData(data: any) {
     return {
+      id: data.id as string,
       name: data.name as string,
       artist_name: data.artist_name as string,
       provider_item_uri: data.provider_item_uri as string,
@@ -67,28 +67,18 @@ export default class AlbumController {
     return ApiResponse.response({ response }, album, 'Album found successfully', 200)
   }
 
-  async findOne({ request, params, response }: HttpContext) {
-    const { id } = params
-    const { fromProvider } = request.only(['fromProvider'])
-    const searchAlbumData = await request.validateUsing(createOrUpdateAlbumValidator)
+  async findOneOrCreate({ request, params, response }: HttpContext) {
+    const { providerItemId } = params
 
-    if (fromProvider) {
-      const created = await this.albumService.create(searchAlbumData as unknown as Album)
-      if (!created) {
+    let album = await this.albumService.findOneByProviderId(providerItemId)
+
+    if (!album) {
+      const searchAlbumData = await request.validateUsing(createOrUpdateAlbumValidator)
+      album = await this.albumService.create(searchAlbumData as unknown as Album)
+      if (!album) {
         return ApiResponse.response({ response }, null, 'Album creation failed', 400)
       }
-      return ApiResponse.response({ response }, created, 'Album found successfully', 200)
     }
-
-    if (!id) {
-      throw new NotFoundException('Album id not found')
-    }
-
-    const album = await this.albumService.findOne(id)
-    if (!album) {
-      return ApiResponse.response({ response }, null, 'Album not found', 404)
-    }
-
     return ApiResponse.response({ response }, album, 'Album found successfully', 200)
   }
 

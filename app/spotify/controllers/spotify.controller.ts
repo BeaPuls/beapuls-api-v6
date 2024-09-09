@@ -26,7 +26,7 @@ export default class SpotifyController {
     }
 
     try {
-      const results = await this.spotifyService.search(user.id, query, types, limit)
+      const results = await this.spotifyService.search(query, types, limit)
       return response.ok({ results })
     } catch (error) {
       return response.status(error.status || 500).send({ error: error.message })

@@ -12,6 +12,7 @@ export default class ArtistController {
 
   private serializeArtistData(data: any) {
     return {
+      id: data.id as string,
       name: data.name as string,
       popularity: data.popularity as number | undefined,
       followers: data.followers as number | undefined,
@@ -42,15 +43,6 @@ export default class ArtistController {
     return ApiResponse.response({ response }, artists, 'Artists found successfully', 200)
   }
 
-  // async findBySearch({ request, response }: HttpContext) {
-  //   const findBySearchArtist = await request.validateUsing(findBySearchArtistValidator)
-  //   const artist = await this.artistService.findBySearch(findBySearchArtist)
-  //   if (!artist) {
-  //     return ApiResponse.response({ response }, null, 'Artist not found', 404)
-  //   }
-  //   return ApiResponse.response({ response }, artist, 'Artist found successfully', 200)
-  // }
-
   async findOneByProviderId({ params, response }: HttpContext) {
     const { providerId } = params
     if (!providerId) {
@@ -63,28 +55,19 @@ export default class ArtistController {
     return ApiResponse.response({ response }, artist, 'Artist found successfully', 200)
   }
 
-  async findOne({ request, params, response }: HttpContext) {
-    const { id } = params
-    const { fromProvider } = request.only(['fromProvider'])
-    const searchArtistData = await request.validateUsing(createOrUpdateArtistValidator)
+  async findOneOrCreate({ request, params, response }: HttpContext) {
+    const { providerItemId } = params
 
-    if (fromProvider) {
-      const created = await this.artistService.create(searchArtistData as unknown as Artist)
-      if (!created) {
+    let artist = await this.artistService.findOneByProviderId(providerItemId)
+
+    if (!artist) {
+      const searchArtistData = await request.validateUsing(createOrUpdateArtistValidator)
+      const artistData = this.serializeArtistData(searchArtistData)
+      artist = await this.artistService.create(artistData as unknown as Artist)
+      if (!artist) {
         return ApiResponse.response({ response }, null, 'Artist creation failed', 400)
       }
-      return ApiResponse.response({ response }, created, 'Artist found successfully', 200)
     }
-
-    if (!id) {
-      throw new NotFoundException('Artist id not found')
-    }
-
-    const artist = await this.artistService.findOne(id)
-    if (!artist) {
-      return ApiResponse.response({ response }, null, 'Artist not found', 404)
-    }
-
     return ApiResponse.response({ response }, artist, 'Artist found successfully', 200)
   }
 
