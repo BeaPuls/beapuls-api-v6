@@ -3,13 +3,13 @@ import { createOrUpdateProfileValidator } from '#profile/validators/create_or_up
 import { uploadProfileAvatarValidator } from '#profile/validators/upload_profile_avatar.validator'
 import { inject } from '@adonisjs/core'
 import { HttpContext } from '@adonisjs/core/http'
-import drive from '@adonisjs/drive/services/main'
 import { DateTime } from 'luxon'
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import { ErrorMessage } from '#exceptions/error_message'
 import User from '#user/models/user'
 import { cuid } from '@adonisjs/core/helpers'
+import drive from '@adonisjs/drive/services/main'
 
 // type UserInfo = {
 //   id: number | string
@@ -21,14 +21,12 @@ import { cuid } from '@adonisjs/core/helpers'
 
 @inject()
 export default class ProfileController {
-  // constructor(private userService: UserService) {} // private artistService: ArtistService // private trackService: TrackService, // private spotifyService: SpotifyService,
-
-  private serializeUserInfo(user: User, profile: Profile) {
+  private async serializeUserInfo(user: User, profile: Profile) {
     return {
       id: profile.id,
       userId: user.id,
       username: profile.username,
-      avatar: profile.avatar,
+      avatar: profile.avatar ? await drive.use().getUrl(profile.avatar) : null,
       dateOfBirth: profile.dateOfBirth,
       description: profile.description,
       genderId: profile.genderId,
@@ -56,7 +54,7 @@ export default class ProfileController {
       throw new NotFoundException()
     }
 
-    const profileData = this.serializeUserInfo(user, profile)
+    const profileData = await this.serializeUserInfo(user, profile)
     return ApiResponse.response({ response }, profileData, 'Profile fetched successfully', 200)
   }
 
@@ -73,6 +71,7 @@ export default class ProfileController {
           currentProfile.dateOfBirth = data.dateOfBirth
           currentProfile.description = data.description
           currentProfile.genderId = data.genderId
+          currentProfile.avatar = 'profile.png'
           await currentProfile.save()
 
           profileResult = currentProfile
@@ -99,9 +98,6 @@ export default class ProfileController {
     const user = auth.getUserOrFail()
 
     const existingProfile = await Profile.query().where('user_id', user.id).first()
-    // if (existingProfile) {
-    //   throw new ForbiddenException(ErrorMessage.PROFILE_ALREADY_SET)
-    // }
 
     const createProfileData = await request.validateUsing(createOrUpdateProfileValidator)
     const profileData = this.serializeProfileData(createProfileData)
@@ -111,13 +107,9 @@ export default class ProfileController {
       existingProfile?.id as string | undefined,
       profileData as unknown as Profile
     )
-    // console.log(profile)
-
-    // console.log(profile.profileResult)
-    // @ts-ignore TODO see dateOfBirth
     return ApiResponse.response(
       { response },
-      this.serializeUserInfo(user, profile.profileResult),
+      await this.serializeUserInfo(user, profile.profileResult),
       `Profile ${profile.action} successfully`,
       201
     )
@@ -133,7 +125,7 @@ export default class ProfileController {
     }
     ApiResponse.response(
       { response },
-      this.serializeUserInfo(user, profile),
+      await this.serializeUserInfo(user, profile),
       'Profile avatar uploaded successfully',
       200
     )

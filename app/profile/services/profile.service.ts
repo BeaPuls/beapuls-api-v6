@@ -11,7 +11,7 @@ export default class ProfileService {
       },
       {
         userId: user.id,
-        avatar: avatarUrl,
+        avatar: avatarUrl || 'profile.png',
         username: username,
       }
     )
