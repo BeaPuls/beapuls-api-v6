@@ -50,13 +50,16 @@ export class TrackService {
     }
   }
 
-  async hasUserVoted(trackId: string, userId: string): Promise<boolean> {
+  async hasUserVoted(trackId: string, userId: string): Promise<string | false> {
     const vote = await TrackVote.query()
       .where('trackId', trackId)
       .andWhere('userId', userId)
       .first()
 
-    return !!vote
+    if (vote) {
+      return vote.voteType
+    }
+    return false
   }
 
   async toggleUserVote(trackId: string, userId: string, voteType: 'up' | 'down') {

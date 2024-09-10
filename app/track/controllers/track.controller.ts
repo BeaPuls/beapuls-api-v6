@@ -10,24 +10,40 @@ import Track from '#track/models/track'
 export default class TrackController {
   constructor(private readonly trackService: TrackService) {}
 
-  private serializeTrackData(data: any) {
+  private serializePostTrackData(data: any) {
     return {
       id: data.id as string,
       name: data.name as string,
-      albumName: data.album_name as string | undefined,
-      artistName: data.artist_name as string,
-      providerItemUri: data.provider_item_uri as string,
-      providerItemImage: data.provider_item_image as string,
-      providerItemId: data.provider_item_id as string,
-      providerTypeId: data.provider_type_id as string | undefined,
-      upVote: data.up_vote as number | undefined,
-      downVote: data.down_vote as number | undefined,
+      albumName: data.album_name ?? (data.albumName as string),
+      artistName: data.artist_name ?? (data.artistName as string),
+      providerItemUri: data.provider_item_uri ?? (data.providerItemUri as string),
+      providerItemImage: data.provider_item_image ?? (data.providerItemImage as string),
+      providerItemId: data.provider_item_id ?? (data.providerItemId as string),
+      providerTypeId: data.provider_type_id ?? (data.providerTypeId as string | undefined),
+      upVote: data.up_vote ?? (data.upVote as number),
+      downVote: data.down_vote ?? (data.downVote as number),
+    }
+  }
+
+  private serializeGetTrackData(data: any) {
+    return {
+      id: data.id as string,
+      name: data.name as string,
+      albumName: data.album_name ?? (data.albumName as string),
+      artistName: data.artist_name ?? (data.artistName as string),
+      providerItemUri: data.provider_item_uri ?? (data.providerItemUri as string),
+      providerItemImage: data.provider_item_image ?? (data.providerItemImage as string),
+      providerItemId: data.provider_item_id ?? (data.providerItemId as string),
+      providerTypeId: data.provider_type_id ?? (data.providerTypeId as string | undefined),
+      upVote: data.up_vote ?? (data.upVote as number),
+      downVote: data.down_vote ?? (data.downVote as number),
+      hasVoted: data.has_voted ?? (data.hasVoted as string | false),
     }
   }
 
   async create({ request, response }: HttpContext) {
     const createTrack = await request.validateUsing(createOrUpdateTrackValidator)
-    const serializedTrack = this.serializeTrackData(createTrack)
+    const serializedTrack = this.serializePostTrackData(createTrack)
     const created = await this.trackService.create(serializedTrack as Track)
 
     if (!created) {
@@ -56,20 +72,25 @@ export default class TrackController {
     return ApiResponse.response({ response }, track, 'Track found successfully', 200)
   }
 
-  async findOneOrCreate({ request, params, response }: HttpContext) {
+  async findOneOrCreate({ request, params, response, auth }: HttpContext) {
+    const user = await auth.getUserOrFail()
     const { providerItemId } = params
 
     let track = await this.trackService.findOneByProviderId(providerItemId)
 
     if (!track) {
       const searchTrackData = await request.validateUsing(createOrUpdateTrackValidator)
-      const serializedTrack = this.serializeTrackData(searchTrackData)
+      const serializedTrack = this.serializePostTrackData(searchTrackData)
       track = await this.trackService.create(serializedTrack as Track)
       if (!track) {
         return ApiResponse.response({ response }, null, 'Track creation failed', 400)
       }
     }
-    return ApiResponse.response({ response }, track, 'Track found successfully', 200)
+
+    const hasVoted = await this.trackService.hasUserVoted(track.id, user.id)
+    const trackData = this.serializeGetTrackData(track)
+    trackData.hasVoted = hasVoted
+    return ApiResponse.response({ response }, trackData, 'Track found successfully', 200)
   }
 
   async update({ params, request, response }: HttpContext) {
@@ -79,7 +100,7 @@ export default class TrackController {
     }
 
     const updateTrack = await request.validateUsing(createOrUpdateTrackValidator)
-    const serializedTrack = this.serializeTrackData(updateTrack)
+    const serializedTrack = this.serializePostTrackData(updateTrack)
     const updated = await this.trackService.update(id, serializedTrack as Track)
     if (!updated) {
       return ApiResponse.response({ response }, null, 'Track update failed', 400)

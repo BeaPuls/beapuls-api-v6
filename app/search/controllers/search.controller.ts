@@ -13,7 +13,6 @@ export default class SearchController {
   constructor(private spotifyService: SpotifyService) {}
 
   async search({ auth, request, response }: HttpContext) {
-    const userId = auth.user?.id ?? null
     let { query, types } = request.only(['query', 'types'])
 
     const results = {
@@ -40,11 +39,11 @@ export default class SearchController {
         results.tracks =
           providerResults.tracks?.items.map((track) => ({
             name: track.name,
-            albumName: track.album?.name,
-            artistName: track.artists?.map((artist) => artist.name).join(', ') || null,
-            providerItemUri: track.uri,
-            providerItemImage: track.album?.images?.[0]?.url || null,
-            providerItemId: track.id,
+            album_name: track.album?.name,
+            artist_name: track.artists?.map((artist) => artist.name).join(', ') || null,
+            provider_item_uri: track.uri,
+            provider_item_image: track.album?.images?.[0]?.url || null,
+            provider_item_id: track.id,
           })) || []
       }
 
@@ -54,9 +53,9 @@ export default class SearchController {
             name: artist.name,
             popularity: artist.popularity,
             followers: artist.followers?.total,
-            providerItemUri: artist.uri,
-            providerItemImage: artist.images?.[0]?.url || null,
-            providerItemId: artist.id,
+            provider_item_uri: artist.uri,
+            provider_item_image: artist.images?.[0]?.url || null,
+            provider_item_id: artist.id,
           })) || []
       }
 
@@ -64,10 +63,10 @@ export default class SearchController {
         results.albums =
           providerResults.albums?.items.map((album) => ({
             name: album.name,
-            artistName: album.artists?.map((artist) => artist.name).join(', ') || null,
-            providerItemUri: album.uri,
-            providerItemImage: album.images?.[0]?.url || null,
-            providerItemId: album.id,
+            artist_name: album.artists?.map((artist) => artist.name).join(', ') || null,
+            provider_item_uri: album.uri,
+            provider_item_image: album.images?.[0]?.url || null,
+            provider_item_id: album.id,
           })) || []
       }
     }

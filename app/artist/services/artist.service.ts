@@ -50,13 +50,16 @@ export class ArtistService {
     }
   }
 
-  async hasUserVoted(artistId: string, userId: string): Promise<boolean> {
+  async hasUserVoted(artistId: string, userId: string): Promise<string | false> {
     const vote = await ArtistVote.query()
       .where('artistId', artistId)
       .andWhere('userId', userId)
       .first()
 
-    return !!vote
+    if (vote) {
+      return vote.voteType
+    }
+    return false
   }
 
   async toggleUserVote(artistId: string, userId: string, voteType: 'up' | 'down') {

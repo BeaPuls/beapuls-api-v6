@@ -5,7 +5,9 @@ import { ArtistCommentService } from '#comment/artist/services/artist_comment.se
 import { AlbumCommentService } from '#comment/album/services/album_comment.service'
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
-import console from 'node:console'
+import Album from '#album/models/album'
+import Artist from '#artist/models/artist'
+import Track from '#track/models/track'
 // import NotFoundException from '#exceptions/not_found.exception'
 
 @inject()
@@ -16,10 +18,24 @@ export default class CommentController {
     private readonly albumCommentService: AlbumCommentService
   ) {}
 
-  private getCommentData(data: any) {
+  private async getCommentData(data: any) {
+    let entity: any
+    if (data.trackId) {
+      entity = await Track.query().where('id', data.trackId).first()
+    }
+    if (data.artistId) {
+      entity = await Artist.query().where('id', data.artistId).first()
+    }
+    if (data.albumId) {
+      entity = await Album.query().where('id', data.albumId).first()
+    }
     return {
       id: data.id,
-      entityId: data.trackId ? data.trackId : data.artistId ? data.artistId : data.albumId,
+      entity: {
+        id: data.trackId ? data.trackId : data.artistId ? data.artistId : data.albumId,
+        image: entity.providerItemImage,
+        name: entity.name,
+      },
       comment: data.comment,
       upVote: data.upVote,
       downVote: data.downVote,
@@ -41,17 +57,17 @@ export default class CommentController {
         ...trackComments.map(async (comment) => ({
           type: 'track',
           // entity: await this.trackCommentService.getTrackData(comment.trackId),
-          comment: this.getCommentData(comment),
+          comment: await this.getCommentData(comment),
         })),
         ...artistComments.map(async (comment) => ({
           type: 'artist',
           // entity: await this.artistCommentService.getArtistData(comment.artistId),
-          comment: this.getCommentData(comment),
+          comment: await this.getCommentData(comment),
         })),
         ...albumComments.map(async (comment) => ({
           type: 'album',
           // entity: await this.albumCommentService.getAlbumData(comment.albumId),
-          comment: this.getCommentData(comment),
+          comment: await this.getCommentData(comment),
         })),
       ])
 

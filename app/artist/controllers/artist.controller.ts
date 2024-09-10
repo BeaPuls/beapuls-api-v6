@@ -5,29 +5,46 @@ import { createOrUpdateArtistValidator } from '#artist/validators/create_or_upda
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Artist from '#artist/models/artist'
+import console from 'node:console'
 
 @inject()
 export default class ArtistController {
   constructor(private readonly artistService: ArtistService) {}
 
-  private serializeArtistData(data: any) {
+  private serializePostArtistData(data: any) {
     return {
       id: data.id as string,
       name: data.name as string,
       popularity: data.popularity as number | undefined,
       followers: data.followers as number | undefined,
-      providerItemUri: data.provider_item_uri as string,
-      providerItemImage: data.provider_item_image as string,
-      providerItemId: data.provider_item_id as string,
-      providerTypeId: data.provider_type_id as string | undefined,
-      upVote: data.up_vote as number,
-      downVote: data.down_vote as number,
+      providerItemUri: data.provider_item_uri ?? (data.providerItemUri as string),
+      providerItemImage: data.provider_item_image ?? (data.providerItemImage as string),
+      providerItemId: data.provider_item_id ?? (data.providerItemId as string),
+      providerTypeId: data.provider_type_id ?? (data.providerTypeId as string | undefined),
+      upVote: data.up_vote ?? (data.upVote as number),
+      downVote: data.down_vote ?? (data.downVote as number),
+    }
+  }
+
+  private serializeGetArtistData(data: any) {
+    return {
+      id: data.id as string,
+      name: data.name as string,
+      popularity: data.popularity as number | undefined,
+      followers: data.followers as number | undefined,
+      providerItemUri: data.provider_item_uri ?? (data.providerItemUri as string),
+      providerItemImage: data.provider_item_image ?? (data.providerItemImage as string),
+      providerItemId: data.provider_item_id ?? (data.providerItemId as string),
+      providerTypeId: data.provider_type_id ?? (data.providerTypeId as string | undefined),
+      upVote: data.up_vote ?? (data.upVote as number),
+      downVote: data.down_vote ?? (data.downVote as number),
+      hasVoted: data.has_voted ?? (data.hasVoted as string | false),
     }
   }
 
   async create({ request, response }: HttpContext) {
     const createArtist = await request.validateUsing(createOrUpdateArtistValidator)
-    const artistData = this.serializeArtistData(createArtist)
+    const artistData = this.serializePostArtistData(createArtist)
     const created = await this.artistService.create(artistData as Artist)
     if (!created) {
       return ApiResponse.response({ response }, null, 'Artist creation failed', 400)
@@ -55,20 +72,24 @@ export default class ArtistController {
     return ApiResponse.response({ response }, artist, 'Artist found successfully', 200)
   }
 
-  async findOneOrCreate({ request, params, response }: HttpContext) {
+  async findOneOrCreate({ auth, request, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
     const { providerItemId } = params
 
     let artist = await this.artistService.findOneByProviderId(providerItemId)
-
     if (!artist) {
       const searchArtistData = await request.validateUsing(createOrUpdateArtistValidator)
-      const artistData = this.serializeArtistData(searchArtistData)
+      const artistData = this.serializePostArtistData(searchArtistData)
       artist = await this.artistService.create(artistData as unknown as Artist)
+      console.log(artist)
       if (!artist) {
         return ApiResponse.response({ response }, null, 'Artist creation failed', 400)
       }
     }
-    return ApiResponse.response({ response }, artist, 'Artist found successfully', 200)
+    const hasVoted = await this.artistService.hasUserVoted(artist.id, user.id)
+    const artistData = this.serializeGetArtistData(artist)
+    artistData.hasVoted = hasVoted
+    return ApiResponse.response({ response }, artistData, 'Artist found successfully', 200)
   }
 
   async update({ params, request, response }: HttpContext) {
@@ -77,7 +98,7 @@ export default class ArtistController {
       throw new NotFoundException('Artist id not found')
     }
     const updateArtist = await request.validateUsing(createOrUpdateArtistValidator)
-    const artistData = this.serializeArtistData(updateArtist)
+    const artistData = this.serializePostArtistData(updateArtist)
     const updated = await this.artistService.update(id, artistData as Artist)
     if (!updated) {
       return ApiResponse.response({ response }, null, 'Artist update failed', 400)

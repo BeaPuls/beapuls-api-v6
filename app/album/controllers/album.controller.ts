@@ -10,23 +10,38 @@ import Album from '#album/models/album'
 export default class AlbumController {
   constructor(private readonly albumService: AlbumService) {}
 
-  private serializeAlbumData(data: any) {
+  private serializePostAlbumData(data: any) {
     return {
       id: data.id as string,
       name: data.name as string,
-      artist_name: data.artist_name as string,
-      provider_item_uri: data.provider_item_uri as string,
-      provider_item_image: data.provider_item_image as string,
-      provider_item_id: data.provider_item_id as string,
-      provider_type_id: data.provider_type_id as string | undefined,
-      up_vote: data.up_vote as number | undefined,
-      down_vote: data.down_vote as number | undefined,
+      artistName: data.artist_name ?? (data.artistName as string),
+      providerItemUri: data.provider_item_uri ?? (data.providerItemUri as string),
+      providerItemImage: data.provider_item_image ?? (data.providerItemImage as string),
+      providerItemId: data.provider_item_id ?? (data.providerItemId as string),
+      providerTypeId: data.provider_type_id ?? (data.providerTypeId as string | undefined),
+      upVote: data.up_vote ?? (data.upVote as number),
+      downVote: data.down_vote ?? (data.downVote as number),
+    }
+  }
+
+  private serializeGetAlbumData(data: any) {
+    return {
+      id: data.id as string,
+      name: data.name as string,
+      artistName: data.artist_name ?? (data.artistName as string),
+      providerItemUri: data.provider_item_uri ?? (data.providerItemUri as string),
+      providerItemImage: data.provider_item_image ?? (data.providerItemImage as string),
+      providerItemId: data.provider_item_id ?? (data.providerItemId as string),
+      providerTypeId: data.provider_type_id ?? (data.providerTypeId as string | undefined),
+      upVote: data.up_vote ?? (data.upVote as number),
+      downVote: data.down_vote ?? (data.downVote as number),
+      hasVoted: data.has_voted ?? (data.hasVoted as string | false),
     }
   }
 
   async create({ request, response }: HttpContext) {
     const createAlbum = await request.validateUsing(createOrUpdateAlbumValidator)
-    const albumData = this.serializeAlbumData(createAlbum)
+    const albumData = this.serializePostAlbumData(createAlbum)
     const created = await this.albumService.create(albumData as unknown as Album)
     if (!created) {
       return ApiResponse.response({ response }, null, 'Album creation failed', 400)
@@ -41,15 +56,6 @@ export default class AlbumController {
     }
     return ApiResponse.response({ response }, albums, 'Albums found successfully', 200)
   }
-
-  // async findBySearch({ request, response }: HttpContext) {
-  //   const findBySearchAlbum = await request.validateUsing(findBySearchAlbumValidator)
-  //   const album = await this.albumService.findBySearch(findBySearchAlbum)
-  //   if (album.length === 0) {
-  //     return ApiResponse.response({ response }, [], 'Albums not found', 404)
-  //   }
-  //   return ApiResponse.response({ response }, album, 'Albums found successfully', 200)
-  // }
 
   async findOneByProviderId({ params, response }: HttpContext) {
     const { providerId, providerTypeId } = params
@@ -67,7 +73,8 @@ export default class AlbumController {
     return ApiResponse.response({ response }, album, 'Album found successfully', 200)
   }
 
-  async findOneOrCreate({ request, params, response }: HttpContext) {
+  async findOneOrCreate({ auth, request, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
     const { providerItemId } = params
 
     let album = await this.albumService.findOneByProviderId(providerItemId)
@@ -79,7 +86,10 @@ export default class AlbumController {
         return ApiResponse.response({ response }, null, 'Album creation failed', 400)
       }
     }
-    return ApiResponse.response({ response }, album, 'Album found successfully', 200)
+    const hasVoted = await this.albumService.hasUserVoted(album.id, user.id)
+    const albumData = this.serializeGetAlbumData(album)
+    albumData.hasVoted = hasVoted
+    return ApiResponse.response({ response }, albumData, 'Album found successfully', 200)
   }
 
   async update({ params, request, response }: HttpContext) {
@@ -90,7 +100,7 @@ export default class AlbumController {
     }
 
     const updateAlbum = await request.validateUsing(createOrUpdateAlbumValidator)
-    const albumData = this.serializeAlbumData(updateAlbum)
+    const albumData = this.serializePostAlbumData(updateAlbum)
     const updated = await this.albumService.update(id, albumData as unknown as Album)
     if (!updated) {
       return ApiResponse.response({ response }, null, 'Album update failed', 400)
