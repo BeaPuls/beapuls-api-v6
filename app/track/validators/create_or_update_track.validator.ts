@@ -28,9 +28,9 @@ export const createOrUpdateTrackValidator = vine.compile(
     album_name: vine.string().optional(),
     artist_name: vine.string(),
     provider_item_uri: vine.string(),
-    provider_item_image: vine.string(),
+    provider_item_image: vine.string().optional(),
     provider_item_id: vine.string(),
-    provider_type_id: vine.number().optional(),
+    provider_type_id: vine.string().optional(),
     up_vote: vine.number().optional(),
     down_vote: vine.number().optional(),
   })

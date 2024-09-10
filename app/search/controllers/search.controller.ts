@@ -6,15 +6,16 @@ import Album from '#album/models/album'
 import { inject } from '@adonisjs/core'
 import { ApiResponse } from '#classes/api_response'
 import Profile from '#profile/models/profile'
-import console from 'node:console'
+import drive from '@adonisjs/drive/services/main'
 
 @inject()
 export default class SearchController {
   constructor(private spotifyService: SpotifyService) {}
 
-  async search({ auth, request, response }: HttpContext) {
+  async search({ request, response }: HttpContext) {
     let { query, types } = request.only(['query', 'types'])
 
+    const defaultImage = await drive.use().getUrl('profile.png')
     const results = {
       profiles: [] as Profile[],
       tracks: [] as Track[],
@@ -39,11 +40,11 @@ export default class SearchController {
         results.tracks =
           providerResults.tracks?.items.map((track) => ({
             name: track.name,
-            album_name: track.album?.name,
-            artist_name: track.artists?.map((artist) => artist.name).join(', ') || null,
-            provider_item_uri: track.uri,
-            provider_item_image: track.album?.images?.[0]?.url || null,
-            provider_item_id: track.id,
+            albumName: track.album?.name,
+            artistName: track.artists?.map((artist) => artist.name).join(', ') || null,
+            providerItemUri: track.uri,
+            providerItemImage: track.album?.images?.[0]?.url ?? defaultImage,
+            providerItemId: track.id,
           })) || []
       }
 
@@ -53,9 +54,9 @@ export default class SearchController {
             name: artist.name,
             popularity: artist.popularity,
             followers: artist.followers?.total,
-            provider_item_uri: artist.uri,
-            provider_item_image: artist.images?.[0]?.url || null,
-            provider_item_id: artist.id,
+            providerItemUri: artist.uri,
+            providerItemImage: artist.images?.[0]?.url ?? defaultImage,
+            providerItemId: artist.id,
           })) || []
       }
 
@@ -63,10 +64,10 @@ export default class SearchController {
         results.albums =
           providerResults.albums?.items.map((album) => ({
             name: album.name,
-            artist_name: album.artists?.map((artist) => artist.name).join(', ') || null,
-            provider_item_uri: album.uri,
-            provider_item_image: album.images?.[0]?.url || null,
-            provider_item_id: album.id,
+            artistName: album.artists?.map((artist) => artist.name).join(', ') || null,
+            providerItemUri: album.uri,
+            providerItemImage: album.images?.[0]?.url ?? defaultImage,
+            providerItemId: album.id,
           })) || []
       }
     }

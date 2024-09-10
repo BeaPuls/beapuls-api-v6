@@ -1,7 +1,7 @@
 import AuthProviders from '#auth/models/auth_providers'
 import User from '#user/models/user'
-import Artist from '#profile/models/artist'
-import Track from '#profile/models/track'
+import Artist from '#profile/models/profile_artist'
+import Track from '#profile/models/profile_track'
 import ProfileService from '#profile/services/profile.service'
 import ArtistService from '#spotify/services/artist.service'
 import SpotifyService from '#spotify/services/spotify.service'
@@ -104,7 +104,6 @@ export default class SpotifyController {
   private async initializeUserData(profileId: string, userId: string) {
     const trackExist = await Track.query().where('profile_id', profileId)
     const topTracks = await this.spotifyService.getTracks(userId, 5)
-
     if (!trackExist.length) {
       await this.trackService.saveTracks(profileId, topTracks)
     } else {

@@ -173,17 +173,43 @@ export default class ArtistCommentController {
     return ApiResponse.response({ response }, updated, 'Artist comment updated successfully', 200)
   }
 
-  async remove({ params, response }: HttpContext) {
+  async remove({ auth, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
     const { id } = params
+
     if (!id) {
-      throw new NotFoundException('Artist comment id missing')
+      throw new NotFoundException("Identifiant du commentaire d'artiste manquant")
+    }
+
+    const artistComment = await this.artistCommentService.findOne(id)
+    if (!artistComment) {
+      throw new NotFoundException("Commentaire d'artiste non trouvé")
+    }
+
+    if (artistComment.userId !== user.id) {
+      return ApiResponse.response(
+        { response },
+        null,
+        'Non autorisé à supprimer ce commentaire',
+        403
+      )
     }
 
     const removed = await this.artistCommentService.remove(id)
     if (!removed) {
-      return ApiResponse.response({ response }, null, 'Artist comment deletion failed', 400)
+      return ApiResponse.response(
+        { response },
+        null,
+        "Échec de la suppression du commentaire d'artiste",
+        400
+      )
     }
-    return ApiResponse.response({ response }, removed, 'Artist comment deleted successfully', 200)
+    return ApiResponse.response(
+      { response },
+      removed,
+      "Commentaire d'artiste supprimé avec succès",
+      200
+    )
   }
 
   @inject()

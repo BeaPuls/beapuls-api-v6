@@ -10,18 +10,13 @@ import { ErrorMessage } from '#exceptions/error_message'
 import User from '#user/models/user'
 import { cuid } from '@adonisjs/core/helpers'
 import drive from '@adonisjs/drive/services/main'
-
-// type UserInfo = {
-//   id: number | string
-//   username: string | null
-//   dateOfBirth: DateTime
-//   description: string
-//   genderId: Gender['id']
-// }
+import ProfileService from '#profile/services/profile.service'
 
 @inject()
 export default class ProfileController {
-  private async serializeUserInfo(user: User, profile: Profile) {
+  constructor(private readonly profileService: ProfileService) {}
+
+  private async serializeUserInfo(user: User, profile: Profile, tops: {}) {
     return {
       id: profile.id,
       userId: user.id,
@@ -30,9 +25,7 @@ export default class ProfileController {
       dateOfBirth: profile.dateOfBirth,
       description: profile.description,
       genderId: profile.genderId,
-      trackIds: profile.tracks,
-      albumIds: profile.albums,
-      artistIds: profile.artists,
+      tops: tops,
     }
   }
 
@@ -48,13 +41,14 @@ export default class ProfileController {
 
   async getUserProfile({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
-
     const profile = await Profile.query().where('user_id', user.id).first()
     if (!profile) {
       throw new NotFoundException()
     }
 
-    const profileData = await this.serializeUserInfo(user, profile)
+    const tops = await this.profileService.getProfileTops(profile.id)
+
+    const profileData = await this.serializeUserInfo(user, profile, tops)
     return ApiResponse.response({ response }, profileData, 'Profile fetched successfully', 200)
   }
 
@@ -130,10 +124,6 @@ export default class ProfileController {
       200
     )
   }
-
-  // private buildAvatarFileName(user: User, file: MultipartFile) {
-  //   return `${user.id}.avatar.${file.extname}`
-  // }
 
   private async saveUserAvatarImage(user: User, file: any): Promise<void> {
     // const fileName = this.buildAvatarFileName(user, file)

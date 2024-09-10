@@ -11,6 +11,7 @@
       "#auth/*": ["./app/auth/*.js"],
       "#profile/*": ["./app/profile/*.js"],
       "#spotify/*": ["./app/spotify/*.js"],
+      "#favorite/*": ["./app/favorite/*.js"],
       "#controllers/*": ["./app/controllers/*.js"],
       "#exceptions/*": ["./app/exceptions/*.js"],
       "#models/*": ["./app/auth/models/*.js"],

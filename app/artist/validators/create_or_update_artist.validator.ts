@@ -28,7 +28,7 @@ export const createOrUpdateArtistValidator = vine.compile(
     popularity: vine.number().optional(),
     followers: vine.number().optional(),
     provider_item_uri: vine.string(),
-    provider_item_image: vine.string(),
+    provider_item_image: vine.string().optional(),
     provider_item_id: vine.string(),
     provider_type_id: vine.string().optional(),
     up_vote: vine.number().optional(),

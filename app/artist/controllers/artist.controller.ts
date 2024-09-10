@@ -5,11 +5,14 @@ import { createOrUpdateArtistValidator } from '#artist/validators/create_or_upda
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Artist from '#artist/models/artist'
-import console from 'node:console'
+import { FavoriteArtistService } from '#favorite/artist/services/favorite_artist.service'
 
 @inject()
 export default class ArtistController {
-  constructor(private readonly artistService: ArtistService) {}
+  constructor(
+    private readonly artistService: ArtistService,
+    private readonly favoriteArtistService: FavoriteArtistService
+  ) {}
 
   private serializePostArtistData(data: any) {
     return {
@@ -39,6 +42,7 @@ export default class ArtistController {
       upVote: data.up_vote ?? (data.upVote as number),
       downVote: data.down_vote ?? (data.downVote as number),
       hasVoted: data.has_voted ?? (data.hasVoted as string | false),
+      isFavorite: data.is_favorite ?? (data.isFavorite as string | false),
     }
   }
 
@@ -78,10 +82,14 @@ export default class ArtistController {
 
     let artist = await this.artistService.findOneByProviderId(providerItemId)
     if (!artist) {
+      try {
+        await request.validateUsing(createOrUpdateArtistValidator)
+      } catch (error) {
+        console.log(error)
+      }
       const searchArtistData = await request.validateUsing(createOrUpdateArtistValidator)
       const artistData = this.serializePostArtistData(searchArtistData)
       artist = await this.artistService.create(artistData as unknown as Artist)
-      console.log(artist)
       if (!artist) {
         return ApiResponse.response({ response }, null, 'Artist creation failed', 400)
       }
@@ -89,6 +97,9 @@ export default class ArtistController {
     const hasVoted = await this.artistService.hasUserVoted(artist.id, user.id)
     const artistData = this.serializeGetArtistData(artist)
     artistData.hasVoted = hasVoted
+
+    const isFavorite = await this.favoriteArtistService.isUserFavorite(artist.id, user.id)
+    artistData.isFavorite = isFavorite
     return ApiResponse.response({ response }, artistData, 'Artist found successfully', 200)
   }
 

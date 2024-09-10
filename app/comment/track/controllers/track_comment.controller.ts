@@ -117,7 +117,6 @@ export default class TrackCommentController {
         return serializedComment
       })
     )
-    console.log(serializedTrackComments)
     return ApiResponse.response(
       { response },
       serializedTrackComments,
@@ -167,17 +166,43 @@ export default class TrackCommentController {
     return ApiResponse.response({ response }, updated, 'Track comment updated successfully', 200)
   }
 
-  async remove({ params, response }: HttpContext) {
+  async remove({ auth, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
     const { id } = params
+
     if (!id) {
-      throw new NotFoundException('Track comment id missing')
+      throw new NotFoundException('Identifiant du commentaire de piste manquant')
+    }
+
+    const trackComment = await this.trackCommentService.findOne(id)
+    if (!trackComment) {
+      throw new NotFoundException('Commentaire de piste non trouvé')
+    }
+
+    if (trackComment.userId !== user.id) {
+      return ApiResponse.response(
+        { response },
+        null,
+        'Non autorisé à supprimer ce commentaire',
+        403
+      )
     }
 
     const removed = await this.trackCommentService.remove(id)
     if (!removed) {
-      return ApiResponse.response({ response }, null, 'Track comment deletion failed', 400)
+      return ApiResponse.response(
+        { response },
+        null,
+        'Échec de la suppression du commentaire de piste',
+        400
+      )
     }
-    return ApiResponse.response({ response }, removed, 'Track comment deleted successfully', 200)
+    return ApiResponse.response(
+      { response },
+      removed,
+      'Commentaire de piste supprimé avec succès',
+      200
+    )
   }
 
   @inject()

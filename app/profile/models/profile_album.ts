@@ -6,13 +6,14 @@ import Profile from './profile.js'
 import AuthProviders from '#auth/models/auth_providers'
 import ProviderType from '#auth/models/provider_type'
 
-export default class Artist extends BaseModel {
-  static table = 'profile_artists'
+export default class ProfileAlbum extends BaseModel {
+  static table = 'profile_albums'
+
   static selfAssignPrimaryKey = true
 
   @beforeCreate()
-  static async createUUID(artist: Artist) {
-    artist.id = randomUUID()
+  static async createUUID(profileAlbum: ProfileAlbum) {
+    profileAlbum.id = randomUUID()
   }
 
   @column({ isPrimary: true })
@@ -21,11 +22,8 @@ export default class Artist extends BaseModel {
   @column()
   declare name?: string
 
-  @column()
-  declare popularity?: string
-
-  @column()
-  declare followers?: string
+  @column({ serializeAs: 'artistName' })
+  declare artistName?: string
 
   @column({ serializeAs: 'providerItemUri' })
   declare providerItemUri?: string

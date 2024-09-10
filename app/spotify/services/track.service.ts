@@ -1,5 +1,5 @@
 import Profile from '#profile/models/profile'
-import Track from '#profile/models/track'
+import Track from '#profile/models/profile_track'
 import { inject } from '@adonisjs/fold'
 
 @inject()

@@ -6,13 +6,13 @@ import Profile from './profile.js'
 import AuthProviders from '#auth/models/auth_providers'
 import ProviderType from '#auth/models/provider_type'
 
-export default class Track extends BaseModel {
+export default class ProfileTrack extends BaseModel {
   static table = 'profile_tracks'
   static selfAssignPrimaryKey = true
 
   @beforeCreate()
-  static async createUUID(track: Track) {
-    track.id = randomUUID()
+  static async createUUID(profileTrack: ProfileTrack) {
+    profileTrack.id = randomUUID()
   }
 
   @column({ isPrimary: true })

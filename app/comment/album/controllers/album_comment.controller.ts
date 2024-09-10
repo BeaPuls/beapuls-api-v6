@@ -172,18 +172,43 @@ export default class AlbumCommentController {
     return ApiResponse.response({ response }, updated, 'Album comment updated successfully', 200)
   }
 
-  async remove({ params, response }: HttpContext) {
+  async remove({ auth, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
     const { id } = params
 
     if (!id) {
-      throw new NotFoundException('Album comment id missing')
+      throw new NotFoundException("Identifiant du commentaire d'album manquant")
+    }
+
+    const albumComment = await this.albumCommentService.findOne(id)
+    if (!albumComment) {
+      throw new NotFoundException("Commentaire d'album non trouvé")
+    }
+
+    if (albumComment.userId !== user.id) {
+      return ApiResponse.response(
+        { response },
+        null,
+        'Non autorisé à supprimer ce commentaire',
+        403
+      )
     }
 
     const removed = await this.albumCommentService.remove(id)
     if (!removed) {
-      return ApiResponse.response({ response }, null, 'Album comment deletion failed', 400)
+      return ApiResponse.response(
+        { response },
+        null,
+        "Échec de la suppression du commentaire d'album",
+        400
+      )
     }
-    return ApiResponse.response({ response }, removed, 'Album comment deleted successfully', 200)
+    return ApiResponse.response(
+      { response },
+      removed,
+      "Commentaire d'album supprimé avec succès",
+      200
+    )
   }
 
   @inject()

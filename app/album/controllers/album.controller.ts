@@ -5,10 +5,14 @@ import { createOrUpdateAlbumValidator } from '#album/validators/create_or_update
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Album from '#album/models/album'
+import { FavoriteAlbumService } from '#favorite/album/services/favorite_album.service'
 
 @inject()
 export default class AlbumController {
-  constructor(private readonly albumService: AlbumService) {}
+  constructor(
+    private readonly albumService: AlbumService,
+    private readonly favoriteAlbumService: FavoriteAlbumService
+  ) {}
 
   private serializePostAlbumData(data: any) {
     return {
@@ -36,6 +40,7 @@ export default class AlbumController {
       upVote: data.up_vote ?? (data.upVote as number),
       downVote: data.down_vote ?? (data.downVote as number),
       hasVoted: data.has_voted ?? (data.hasVoted as string | false),
+      isFavorite: data.is_favorite ?? (data.isFavorite as boolean),
     }
   }
 
@@ -89,6 +94,9 @@ export default class AlbumController {
     const hasVoted = await this.albumService.hasUserVoted(album.id, user.id)
     const albumData = this.serializeGetAlbumData(album)
     albumData.hasVoted = hasVoted
+
+    const isFavorite = await this.favoriteAlbumService.isUserFavorite(album.id, user.id)
+    albumData.isFavorite = isFavorite
     return ApiResponse.response({ response }, albumData, 'Album found successfully', 200)
   }
 

@@ -5,10 +5,14 @@ import { createOrUpdateTrackValidator } from '#track/validators/create_or_update
 import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Track from '#track/models/track'
+import { FavoriteTrackService } from '#favorite/track/services/favorite_track.service'
 
 @inject()
 export default class TrackController {
-  constructor(private readonly trackService: TrackService) {}
+  constructor(
+    private readonly trackService: TrackService,
+    private readonly favoriteTrackService: FavoriteTrackService
+  ) {}
 
   private serializePostTrackData(data: any) {
     return {
@@ -38,6 +42,7 @@ export default class TrackController {
       upVote: data.up_vote ?? (data.upVote as number),
       downVote: data.down_vote ?? (data.downVote as number),
       hasVoted: data.has_voted ?? (data.hasVoted as string | false),
+      isFavorite: data.is_favorite ?? (data.isFavorite as boolean),
     }
   }
 
@@ -90,6 +95,9 @@ export default class TrackController {
     const hasVoted = await this.trackService.hasUserVoted(track.id, user.id)
     const trackData = this.serializeGetTrackData(track)
     trackData.hasVoted = hasVoted
+
+    const isFavorite = await this.favoriteTrackService.isUserFavorite(track.id, user.id)
+    trackData.isFavorite = isFavorite
     return ApiResponse.response({ response }, trackData, 'Track found successfully', 200)
   }
 

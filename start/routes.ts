@@ -1,6 +1,7 @@
 import { middleware } from '#start/kernel'
 import { HttpContext } from '@adonisjs/core/http'
 import router from '@adonisjs/core/services/router'
+
 /*
 |--------------------------------------------------------------------------
 | Routes file
@@ -23,6 +24,13 @@ const ArtistCommentController = () =>
   import('#comment/artist/controllers/artist_comment.controller')
 const SearchController = () => import('#search/controllers/search.controller')
 const CommentController = () => import('#comment/controllers/comment.controller')
+const FavoriteController = () => import('#favorite/controllers/favorite.controller')
+const FavoriteTrackController = () =>
+  import('#favorite/track/controllers/favorite_track.controller')
+const FavoriteAlbumController = () =>
+  import('#favorite/album/controllers/favorite_album.controller')
+const FavoriteArtistController = () =>
+  import('#favorite/artist/controllers/favorite_artist.controller')
 
 router.get('/', async ({ response }: HttpContext) =>
   response.ok({ uptime: Math.round(process.uptime()) })
@@ -66,6 +74,7 @@ router
         router
           .group(() => {
             router.get('profile', [ProfileController, 'getUserProfile'])
+            router.get('profile/tops', [ProfileController, 'getProfileTops'])
             router.post('profile', [ProfileController, 'createOrUpdateUserProfile'])
             router.get('profile/avatar', [ProfileController, 'getUserAvatar'])
             router.post('profile/avatar', [ProfileController, 'uploadUserAvatar'])
@@ -175,6 +184,28 @@ router
             })
           })
           .prefix('comments')
+
+        router
+          .group(() => {
+            router.get('user/owns', [FavoriteController, 'getUserFavorites'])
+
+            router.group(() => {
+              router
+                .get('track/:trackId', [FavoriteTrackController, 'toggle'])
+                .use(middleware.role(['Admin', 'User']))
+            })
+            router.group(() => {
+              router
+                .get('album/:albumId', [FavoriteAlbumController, 'toggle'])
+                .use(middleware.role(['Admin', 'User']))
+            })
+            router.group(() => {
+              router
+                .get('artist/:artistId', [FavoriteArtistController, 'toggle'])
+                .use(middleware.role(['Admin', 'User']))
+            })
+          })
+          .prefix('favorites')
       })
       .use(
         middleware.auth({

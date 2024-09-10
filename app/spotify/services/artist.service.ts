@@ -1,6 +1,5 @@
-import Artist from '#profile/models/artist'
+import Artist from '#profile/models/profile_artist'
 import Profile from '#profile/models/profile'
-import Track from '#profile/models/track'
 import { inject } from '@adonisjs/fold'
 
 @inject()
