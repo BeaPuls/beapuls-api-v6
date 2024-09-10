@@ -46,22 +46,20 @@ export default class SpotifyService {
     const url = env.get('SPOTIFY_TOKEN_URL')
     const token = localStorage.getToken()
     const refreshToken = token?.access_token
-
     try {
-      const response = await axios.post(
-        url ?? '',
-        new URLSearchParams({
+      const authOptions = {
+        url,
+        data: new URLSearchParams({
           grant_type: 'refresh_token',
-          refresh_token: refreshToken ?? '',
-          client_id: env.get('SPOTIFY_CLIENT_ID'),
-        }),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
-        }
-      )
-
+          refresh_token: refreshToken,
+        } as any),
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
+      }
+      const response = await axios.post(authOptions.url ?? '', authOptions.data, {
+        headers: authOptions.headers,
+      })
       const expirationDate = new Date(Date.now() + response.data.expires_in * 1000)
       response.data.expires_at = expirationDate.toISOString()
 
@@ -77,11 +75,17 @@ export default class SpotifyService {
     }
   }
 
-  private isTokenExpired(): boolean {
+  private async isTokenExpired(): Promise<string | void> {
     const token = localStorage.getToken()
-    if (!token || !token.expires_at) return false
-    const expiresAt = new Date(token.expires_at).getTime()
-    return expiresAt < Date.now()
+    if (token) {
+      const expiresAt = new Date(token.expires_at).getTime()
+      let expired = expiresAt < Date.now()
+      if (expired) {
+        return await this.getToken()
+      } else {
+        return token.access_token
+      }
+    }
   }
 
   async getArtists(userId: User['id'], limit: number = 5) {
@@ -221,18 +225,12 @@ export default class SpotifyService {
 
   async search(query: string, types: ('album' | 'artist' | 'track')[], limit: number = 5) {
     try {
-      if (this.isTokenExpired()) {
-        await this.refreshToken()
-      } else {
-        await this.getToken()
-      }
-      const token = localStorage.getToken()
-
+      const token = await this.isTokenExpired()
       const resp = await axios.get(
         `${env.get('SPOTIFY_URL')}/search?q=${encodeURIComponent(query)}&type=${types.join(',')}&limit=${limit}`,
         {
           headers: {
-            Authorization: `Bearer ${token?.access_token}`,
+            Authorization: `Bearer ${token}`,
           },
         }
       )
