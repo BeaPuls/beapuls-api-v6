@@ -12,8 +12,8 @@ export class ArtistCommentService {
     return newArtistComment
   }
 
-  findAll() {
-    return ArtistComment.all()
+  findAllByArtistId(artistId: string) {
+    return ArtistComment.query().where('artist_id', artistId).orderBy('created_at', 'desc')
   }
 
   async findOne(id: string) {
@@ -37,13 +37,16 @@ export class ArtistCommentService {
     }
   }
 
-  async hasUserVoted(commentId: string, userId: string): Promise<boolean> {
+  async hasUserVoted(commentId: string, userId: string): Promise<string | false> {
     const vote = await ArtistCommentVote.query()
       .where('commentId', commentId)
       .andWhere('userId', userId)
       .first()
 
-    return !!vote
+    if (vote) {
+      return vote.voteType
+    }
+    return false
   }
 
   async toggleUserVote(commentId: string, userId: string, voteType: 'up' | 'down') {

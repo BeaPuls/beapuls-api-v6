@@ -6,24 +6,43 @@ import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import Track from '#track/models/track'
 import TrackComment from '../models/track_comment.js'
+import drive from '@adonisjs/drive/services/main'
+import Profile from '#profile/models/profile'
 
 @inject()
 export default class TrackCommentController {
   constructor(private readonly trackCommentService: TrackCommentService) {}
 
-  private serializeTrackCommentData(data: any) {
+  private serializePostTrackCommentData(data: any) {
     return {
       id: data.id as string,
-      userId: data.user_id as string,
-      trackId: data.track_id as string,
-      comment: data.comment as string,
-      upVote: data.up_vote as number | undefined,
-      downVote: data.down_vote as number | undefined,
+      userId: data.user_id ?? (data.userId as string),
+      trackId: data.track_id ?? (data.trackId as string),
+      comment: data.comment ?? (data.comment as string),
+      upVote: data.up_vote ?? (data.upVote as number | undefined),
+      downVote: data.down_vote ?? (data.downVote as number | undefined),
+    }
+  }
+
+  private serializeGetTrackCommentData(data: any) {
+    return {
+      id: data.id as string,
+      user: {
+        id: data.user_id ?? (data.userId as string),
+        username: data.user_username ?? (data.userUsername as string),
+        avatar: data.user_avatar ?? (data.userAvatar as string),
+      },
+      trackId: data.track_id ?? (data.trackId as string),
+      comment: data.comment ?? (data.comment as string),
+      upVote: data.up_vote ?? (data.upVote as number | undefined),
+      downVote: data.down_vote ?? (data.downVote as number | undefined),
+      hasVoted: data.has_voted ?? (data.hasVoted as boolean | undefined),
+      createdAt: data.created_at ?? (data.createdAt as string),
     }
   }
 
   async create({ auth, params, request, response }: HttpContext) {
-    const user = auth.getUserOrFail()
+    const user = await auth.getUserOrFail()
     const { trackId } = params
     if (!trackId) {
       throw new NotFoundException('Track id missing')
@@ -35,29 +54,73 @@ export default class TrackCommentController {
     }
 
     const createTrackComment = await request.validateUsing(createOrUpdateTrackCommentValidator)
-    let trackCommentData = this.serializeTrackCommentData(createTrackComment)
-
+    let trackCommentData = this.serializePostTrackCommentData(createTrackComment)
     trackCommentData = {
       ...trackCommentData,
       trackId: track.id,
       userId: user.id,
     }
-
     const created = await this.trackCommentService.create(trackCommentData as TrackComment)
     if (!created) {
       return ApiResponse.response({ response }, null, 'Track comment creation failed', 400)
     }
-    return ApiResponse.response({ response }, created, 'Track comment created successfully', 201)
-  }
-
-  async findAll({ response }: HttpContext) {
-    const trackComments = await this.trackCommentService.findAll()
-    if (!trackComments) {
-      return ApiResponse.response({ response }, null, 'Track comments not found', 404)
+    const profileUser = await Profile.query().where('user_id', user.id).first()
+    const hasVoted = await this.trackCommentService.hasUserVoted(created.id, user.id)
+    const trackGetCommentData = this.serializeGetTrackCommentData(created)
+    trackGetCommentData.hasVoted = hasVoted
+    if (profileUser) {
+      trackGetCommentData.user = {
+        id: profileUser.id,
+        username: profileUser.username,
+        avatar: profileUser.avatar
+          ? profileUser.avatar.startsWith('http')
+            ? profileUser.avatar
+            : await drive.use().getUrl(profileUser.avatar)
+          : null,
+      }
     }
     return ApiResponse.response(
       { response },
-      trackComments,
+      trackGetCommentData,
+      'Track comment created successfully',
+      201
+    )
+  }
+
+  async findAllByTrackId({ auth, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
+    const { trackId } = params
+    const trackComments = await this.trackCommentService.findAllByTrackId(trackId)
+    if (!trackComments) {
+      return ApiResponse.response({ response }, null, 'Track comments not found', 404)
+    }
+
+    const serializedTrackComments = await Promise.all(
+      trackComments.map(async (comment) => {
+        const serializedComment = this.serializeGetTrackCommentData(comment)
+        serializedComment.hasVoted = await this.trackCommentService.hasUserVoted(
+          comment.id,
+          user.id
+        )
+        const profileUser = await Profile.query().where('user_id', comment.userId).first()
+        if (profileUser) {
+          serializedComment.user = {
+            ...serializedComment.user,
+            username: profileUser.username,
+            avatar: profileUser.avatar
+              ? profileUser.avatar.startsWith('http')
+                ? profileUser.avatar
+                : await drive.use().getUrl(profileUser.avatar)
+              : null,
+          }
+        }
+        return serializedComment
+      })
+    )
+    console.log(serializedTrackComments)
+    return ApiResponse.response(
+      { response },
+      serializedTrackComments,
       'Track comments found successfully',
       200
     )
@@ -77,7 +140,7 @@ export default class TrackCommentController {
   }
 
   async update({ auth, params, request, response }: HttpContext) {
-    const user = auth.getUserOrFail()
+    const user = await auth.getUserOrFail()
     const { id } = params
     if (!id) {
       throw new NotFoundException('Track comment id missing')
@@ -90,7 +153,7 @@ export default class TrackCommentController {
 
     const updateTrackComment = await request.validateUsing(createOrUpdateTrackCommentValidator)
 
-    let trackCommentData = this.serializeTrackCommentData(updateTrackComment)
+    let trackCommentData = this.serializePostTrackCommentData(updateTrackComment)
 
     trackCommentData = {
       ...trackCommentData,

@@ -12,8 +12,8 @@ export class TrackCommentService {
     return newTrackComment
   }
 
-  findAll() {
-    return TrackComment.all()
+  findAllByTrackId(trackId: string) {
+    return TrackComment.query().where('track_id', trackId).orderBy('created_at', 'desc')
   }
 
   async findOne(id: string) {
@@ -37,13 +37,16 @@ export class TrackCommentService {
     }
   }
 
-  async hasUserVoted(commentId: string, userId: string): Promise<boolean> {
+  async hasUserVoted(commentId: string, userId: string): Promise<string | false> {
     const vote = await TrackCommentVote.query()
       .where('commentId', commentId)
       .andWhere('userId', userId)
       .first()
 
-    return !!vote
+    if (vote) {
+      return vote.voteType
+    }
+    return false
   }
 
   async toggleUserVote(commentId: string, userId: string, voteType: 'up' | 'down') {

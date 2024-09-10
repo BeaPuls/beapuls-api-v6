@@ -12,8 +12,8 @@ export class AlbumCommentService {
     return newAlbumComment
   }
 
-  findAll() {
-    return AlbumComment.all()
+  findAllByAlbumId(albumId: string) {
+    return AlbumComment.query().where('album_id', albumId).orderBy('created_at', 'desc')
   }
 
   async findOne(id: string) {
@@ -37,13 +37,16 @@ export class AlbumCommentService {
     }
   }
 
-  async hasUserVoted(commentId: string, userId: string): Promise<boolean> {
+  async hasUserVoted(commentId: string, userId: string): Promise<string | false> {
     const vote = await AlbumCommentVote.query()
       .where('commentId', commentId)
       .andWhere('userId', userId)
       .first()
 
-    return !!vote
+    if (vote) {
+      return vote.voteType
+    }
+    return false
   }
 
   async toggleUserVote(commentId: string, userId: string, voteType: 'up' | 'down') {

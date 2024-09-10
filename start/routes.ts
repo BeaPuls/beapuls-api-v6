@@ -126,7 +126,7 @@ router
             router.get('user/last-comments', [CommentController, 'getLastUserComments'])
 
             router.group(() => {
-              router.get('track', [TrackCommentController, 'findAll'])
+              router.get('track/:trackId', [TrackCommentController, 'findAllByTrackId'])
               router.get('track/:id', [TrackCommentController, 'findOne'])
               router
                 .post('tracks/track/:trackId', [TrackCommentController, 'create'])
@@ -142,7 +142,7 @@ router
                 .use(middleware.role(['Admin', 'User']))
             })
             router.group(() => {
-              router.get('album', [AlbumCommentController, 'findAll'])
+              router.get('album/:albumId', [AlbumCommentController, 'findAllByAlbumId'])
               router.get('album/:id', [AlbumCommentController, 'findOne'])
               router
                 .post('albums/album/:albumId', [AlbumCommentController, 'create'])
@@ -158,7 +158,7 @@ router
                 .use(middleware.role(['Admin', 'User']))
             })
             router.group(() => {
-              router.get('artist', [ArtistCommentController, 'findAll'])
+              router.get('artist/:artistId', [ArtistCommentController, 'findAllByArtistId'])
               router.get('artist/:id', [ArtistCommentController, 'findOne'])
               router
                 .post('artists/artist/:artistId', [ArtistCommentController, 'create'])

@@ -6,19 +6,38 @@ import { ApiResponse } from '#classes/api_response'
 import NotFoundException from '#exceptions/not_found.exception'
 import AlbumComment from '../models/album_comment.js'
 import Album from '#album/models/album'
+import Profile from '#profile/models/profile'
+import drive from '@adonisjs/drive/services/main'
 
 @inject()
 export default class AlbumCommentController {
   constructor(private readonly albumCommentService: AlbumCommentService) {}
 
-  private serializeAlbumCommentData(data: any) {
+  private serializePostAlbumCommentData(data: any) {
     return {
       id: data.id as string,
-      userId: data.user_id as string,
-      albumId: data.album_id as string,
-      comment: data.comment as string,
-      upVote: data.up_vote as number | undefined,
-      downVote: data.down_vote as number | undefined,
+      userId: data.user_id ?? (data.userId as string),
+      albumId: data.album_id ?? (data.albumId as string),
+      comment: data.comment ?? (data.comment as string),
+      upVote: data.up_vote ?? (data.upVote as number | undefined),
+      downVote: data.down_vote ?? (data.downVote as number | undefined),
+    }
+  }
+
+  private serializeGetAlbumCommentData(data: any) {
+    return {
+      id: data.id as string,
+      user: {
+        id: data.user_id ?? (data.userId as string),
+        username: data.user_username ?? (data.userUsername as string),
+        avatar: data.user_avatar ?? (data.userAvatar as string),
+      },
+      albumId: data.album_id ?? (data.albumId as string),
+      comment: data.comment ?? (data.comment as string),
+      upVote: data.up_vote ?? (data.upVote as number | undefined),
+      downVote: data.down_vote ?? (data.downVote as number | undefined),
+      hasVoted: data.has_voted ?? (data.hasVoted as boolean | undefined),
+      createdAt: data.created_at ?? (data.createdAt as string),
     }
   }
 
@@ -37,7 +56,7 @@ export default class AlbumCommentController {
     }
 
     const createAlbumComment = await request.validateUsing(createOrUpdateAlbumCommentValidator)
-    let albumCommentData = this.serializeAlbumCommentData(createAlbumComment)
+    let albumCommentData = this.serializePostAlbumCommentData(createAlbumComment)
 
     albumCommentData = {
       ...albumCommentData,
@@ -49,17 +68,63 @@ export default class AlbumCommentController {
     if (!created) {
       return ApiResponse.response({ response }, null, 'Album comment creation failed', 400)
     }
-    return ApiResponse.response({ response }, created, 'Album comment created successfully', 201)
-  }
-
-  async findAll({ response }: HttpContext) {
-    const albumComments = await this.albumCommentService.findAll()
-    if (!albumComments) {
-      return ApiResponse.response({ response }, null, 'Album comments not found', 404)
+    const profileUser = await Profile.query().where('user_id', user.id).first()
+    const hasVoted = await this.albumCommentService.hasUserVoted(created.id, user.id)
+    const albumGetCommentData = this.serializeGetAlbumCommentData(created)
+    albumGetCommentData.hasVoted = hasVoted
+    if (profileUser) {
+      albumGetCommentData.user = {
+        id: profileUser.id,
+        username: profileUser.username,
+        avatar: profileUser.avatar
+          ? profileUser.avatar.startsWith('http')
+            ? profileUser.avatar
+            : await drive.use().getUrl(profileUser.avatar)
+          : null,
+      }
     }
     return ApiResponse.response(
       { response },
-      albumComments,
+      albumGetCommentData,
+      'Album comment created successfully',
+      201
+    )
+  }
+
+  async findAllByAlbumId({ auth, params, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
+    const { albumId } = params
+    const albumComments = await this.albumCommentService.findAllByAlbumId(albumId)
+    if (!albumComments) {
+      return ApiResponse.response({ response }, null, 'Album comments not found', 404)
+    }
+
+    // const comments = []
+    const serializedAlbumComments = await Promise.all(
+      albumComments.map(async (comment) => {
+        const serializedComment = this.serializeGetAlbumCommentData(comment)
+        serializedComment.hasVoted = await this.albumCommentService.hasUserVoted(
+          comment.id,
+          user.id
+        )
+        const profileUser = await Profile.query().where('user_id', comment.userId).first()
+        if (profileUser) {
+          serializedComment.user = {
+            ...serializedComment.user,
+            username: profileUser.username,
+            avatar: profileUser.avatar
+              ? profileUser.avatar.startsWith('http')
+                ? profileUser.avatar
+                : await drive.use().getUrl(profileUser.avatar)
+              : null,
+          }
+        }
+        return serializedComment
+      })
+    )
+    return ApiResponse.response(
+      { response },
+      serializedAlbumComments,
       'Album comments found successfully',
       200
     )
@@ -94,7 +159,7 @@ export default class AlbumCommentController {
 
     const updateAlbumComment = await request.validateUsing(createOrUpdateAlbumCommentValidator)
 
-    let albumCommentData = this.serializeAlbumCommentData(updateAlbumComment)
+    let albumCommentData = this.serializePostAlbumCommentData(updateAlbumComment)
 
     albumCommentData = {
       ...albumCommentData,
