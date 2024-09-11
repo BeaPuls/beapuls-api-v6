@@ -17,6 +17,9 @@ public/assets
 
 storage/
 
+# Local storage
+.localStorage
+
 # Build tools specific
 npm-debug.log
 yarn-error.log

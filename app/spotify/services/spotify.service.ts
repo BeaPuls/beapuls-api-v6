@@ -85,6 +85,8 @@ export default class SpotifyService {
       } else {
         return token.access_token
       }
+    } else {
+      return await this.getToken()
     }
   }
 

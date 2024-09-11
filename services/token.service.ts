@@ -9,8 +9,6 @@ interface TokenData {
 export default class TokenService {
   async setToken(tokenData: TokenData): Promise<void> {
     const store = storage.getStore()
-    console.log('store:', store)
-    console.log('tokenData:', tokenData)
     if (store) {
       store.set('access_token', tokenData.access_token)
       store.set('token_type', tokenData.token_type)
@@ -19,15 +17,15 @@ export default class TokenService {
   }
 
   async getToken(): Promise<TokenData | null> {
-    // const store = storage.set('test', 'aaaaa')
-    // if (store) {
-    //   const tokenData = {
-    //     access_token: store.get('access_token') as string,
-    //     token_type: store.get('token_type') as string,
-    //     expires_at: store.get('expires_at') as string,
-    //   }
-    //   return tokenData ? tokenData : null
-    // }
+    const store = storage.set('test', 'aaaaa')
+    if (store) {
+      const tokenData = {
+        access_token: store.get('access_token') as string,
+        token_type: store.get('token_type') as string,
+        expires_at: store.get('expires_at') as string,
+      }
+      return tokenData ? tokenData : null
+    }
     return null
   }
 
