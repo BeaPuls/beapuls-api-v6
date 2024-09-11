@@ -43,10 +43,16 @@
         <div class="bg-white shadow-md rounded-lg overflow-hidden">
             <div class="p-6">
                 <div class="flex flex-col items-center mb-6">
-                    <img src="{{ await driveUrl(profile.avatar) }}" alt="Avatar" class="w-24 h-24 rounded-full mb-4 border-4 border-primary">
+                    @if(profile.avatar.includes('https'))
+                        <img src="{{ profile.avatar }}" alt="Avatar" class="w-24 h-24 rounded-full mb-4 border-4 border-primary">
+                    @else
+                        <img src="{{ await driveUrl(profile.avatar) }}" alt="Avatar" class="w-24 h-24 rounded-full mb-4 border-4 border-primary">
+                    @endif
                     <div class="text-center">
                         <h1 class="text-2xl font-bold text-primary">{{ profile.username }}</h1>
-                        <p class="text-secondary">Né(e) le {{ profile.dateOfBirth.toFormat('dd/MM/yyyy') }}</p>
+                        @if(profile.dateOfBirth)
+                            <p class="text-secondary">Né(e) le {{ profile.dateOfBirth.toFormat('dd/MM/yyyy') }}</p>
+                        @endif
                     </div>
                 </div>
 
@@ -120,7 +126,9 @@
                                         <img src="{{ comment.comment.entity.image }}" alt="{{ comment.comment.entity.name }}" class="w-10 h-10 rounded-full mr-3">
                                         <div>
                                             <p class="font-semibold">{{ comment.comment.entity.name }}</p>
-                                            {{--  <p class="text-xs text-tertiary">Le {{ DateTime.fromISO(comment.comment.createdAt).toFormat('dd/MM/yyyy à HH:mm') }}</p>  --}}
+                                            @if(comment.comment.createdAt)
+                                                <p class="text-xs text-tertiary">Le {{ (comment.comment.createdAt).toFormat('dd/MM/yyyy à HH:mm') }}</p>
+                                            @endif
                                         </div>
                                     </div>
                                     <p class="mb-2">{{ comment.comment.comment }}</p>
