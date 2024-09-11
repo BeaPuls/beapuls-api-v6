@@ -150,7 +150,7 @@ export default class ProfileController {
     return profile ? key : false
   }
 
-  async getUserAvatar({ auth, response }: HttpContext): Promise<void> {
+  async getUserAvatar({ auth, response }: HttpContext) {
     const user = await auth.getUserOrFail()
 
     const profile = await Profile.query().where('user_id', user.id).first()
@@ -162,8 +162,8 @@ export default class ProfileController {
     if (!avatar) {
       throw new NotFoundException(ErrorMessage.PROFILE_AVATAR_NOT_FOUND)
     }
-    const url = await drive.use().getUrl(avatar)
-    ApiResponse.response({ response }, url, 'Profile avatar fetched successfully', 200)
+    const url = avatar.startsWith('http') ? avatar : await drive.use().getUrl(avatar)
+    return ApiResponse.response({ response }, url, 'Profile avatar fetched successfully', 200)
   }
 
   async getProfileTops({ auth, response }: HttpContext) {
