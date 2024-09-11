@@ -15,7 +15,7 @@ export default class SearchController {
   async search({ request, response }: HttpContext) {
     let { query, types } = request.only(['query', 'types'])
 
-    const defaultImage = await drive.use().getUrl('profile.png')
+    const defaultImage = await drive.use().getUrl('uploads/profile.png')
     const results = {
       profiles: [] as Profile[],
       tracks: [] as Track[],

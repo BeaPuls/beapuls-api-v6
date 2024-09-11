@@ -13,6 +13,7 @@
       "#spotify/*": ["./app/spotify/*.js"],
       "#favorite/*": ["./app/favorite/*.js"],
       "#controllers/*": ["./app/controllers/*.js"],
+      "#gender/*": ["./app/gender/*.js"],
       "#exceptions/*": ["./app/exceptions/*.js"],
       "#models/*": ["./app/auth/models/*.js"],
       "#services/*": ["./services/*.ts"],

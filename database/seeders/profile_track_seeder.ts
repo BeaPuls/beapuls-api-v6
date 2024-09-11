@@ -1,5 +1,5 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import Track from '#profile/models/track'
+import Track from '#profile/models/profile_track'
 import User from '#user/models/user'
 import ProviderType, { ProviderTypeName } from '#auth/models/provider_type'
 import Profile from '#profile/models/profile'

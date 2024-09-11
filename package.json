@@ -23,6 +23,7 @@
     "#track/*": "./app/track/*.js",
     "#artist/*": "./app/artist/*.js",
     "#auth/*": "./app/auth/*.js",
+    "#gender/*": "./app/gender/*.js",
     "#user/*": "./app/user/*.js",
     "#profile/*": "./app/profile/*.js",
     "#spotify/*": "./app/spotify/*.js",

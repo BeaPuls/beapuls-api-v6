@@ -31,6 +31,7 @@ const FavoriteAlbumController = () =>
   import('#favorite/album/controllers/favorite_album.controller')
 const FavoriteArtistController = () =>
   import('#favorite/artist/controllers/favorite_artist.controller')
+const GenderController = () => import('#gender/controllers/gender.controller')
 
 router.get('/', async ({ response }: HttpContext) =>
   response.ok({ uptime: Math.round(process.uptime()) })
@@ -68,6 +69,10 @@ router
           )
       })
       .prefix('auth')
+
+    router.group(() => {
+      router.get('genders', [GenderController, 'findAll'])
+    })
 
     router
       .group(() => {

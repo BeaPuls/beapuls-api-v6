@@ -1,12 +1,20 @@
 import User from '#user/models/user'
 import Gender from '#profile/models/gender'
-import { BaseModel, beforeCreate, belongsTo, column, hasMany } from '@adonisjs/lucid/orm'
+import {
+  BaseModel,
+  beforeCreate,
+  afterCreate,
+  belongsTo,
+  column,
+  hasMany,
+} from '@adonisjs/lucid/orm'
 import type { BelongsTo, HasMany } from '@adonisjs/lucid/types/relations'
 import { DateTime } from 'luxon'
 import { randomUUID } from 'node:crypto'
-import Album from '../../album/models/album.js'
-import Artist from '../../artist/models/artist.js'
-import Track from '../../track/models/track.js'
+import Album from '#album/models/album'
+import Artist from '#artist/models/artist'
+import Track from '#track/models/track'
+import drive from '@adonisjs/drive/services/main'
 
 export interface ProfileData {
   username: string
@@ -21,6 +29,14 @@ export default class Profile extends BaseModel {
   @beforeCreate()
   static async createUUID(profile: Profile) {
     profile.id = randomUUID()
+  }
+
+  @afterCreate()
+  static async setDefaultAvatar(profile: Profile) {
+    if (!profile.avatar) {
+      profile.avatar = 'uploads/profile.png'
+      await profile.save()
+    }
   }
 
   @column({ isPrimary: true })

@@ -245,7 +245,7 @@
 										{
 											"key": "avatar",
 											"type": "file",
-											"src": "/Users/qtn/Desktop/Capture d’écran 2024-08-05 à 10.40.33.png"
+											"src": "/Users/qtn/Desktop/sardar-kamran-khan-kjgPM-1zK-o-unsplash.jpg"
 										}
 									]
 								},
@@ -345,26 +345,31 @@
 						}
 					},
 					"response": []
-				}
-			]
-		},
-		{
-			"name": "User",
-			"item": [
+				},
 				{
-					"name": "Profile",
+					"name": "Profile Tops",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "{{BASE_URL_API}}/auth/user/profile",
+							"raw": "{{BASE_URL_API}}/user/profile/tops",
 							"host": [
 								"{{BASE_URL_API}}"
 							],
 							"path": [
-								"auth",
 								"user",
-								"profile"
+								"profile",
+								"tops"
 							]
 						}
 					},
@@ -412,6 +417,47 @@
 									"key": "limit",
 									"value": "3"
 								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "GET TOKEN",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "Basic MmI4ZmI1YTMyYjAzNDMzNDgyYmQ0NWJmZTlhNGVlMWE6MGQ2YmIzNzNlMjRkNGMxYmE2NjZjMGEwNDA4ZTBjMDc=",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "grant_type",
+									"value": "client_credentials",
+									"type": "text"
+								}
+							]
+						},
+						"url": {
+							"raw": "https://accounts.spotify.com/api/token",
+							"protocol": "https",
+							"host": [
+								"accounts",
+								"spotify",
+								"com"
+							],
+							"path": [
+								"api",
+								"token"
 							]
 						}
 					},
@@ -1250,7 +1296,7 @@
 					"name": "Track",
 					"item": [
 						{
-							"name": "Track Comments",
+							"name": "Comments By Track Id",
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -1265,13 +1311,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{BASE_URL_API}}/comments/track",
+									"raw": "{{BASE_URL_API}}/comments/track/f7318299-093b-4d2c-b32a-0f6c32af8743",
 									"host": [
 										"{{BASE_URL_API}}"
 									],
 									"path": [
 										"comments",
-										"track"
+										"track",
+										"f7318299-093b-4d2c-b32a-0f6c32af8743"
 									],
 									"query": [
 										{
@@ -1338,7 +1385,7 @@
 									}
 								},
 								"url": {
-									"raw": "{{BASE_URL_API}}/comments/tracks/track/fb27a878-20e1-4c47-8330-b907b76619d2",
+									"raw": "{{BASE_URL_API}}/comments/tracks/track/f4728950-9685-4bb1-8499-af0710b0c780",
 									"host": [
 										"{{BASE_URL_API}}"
 									],
@@ -1346,7 +1393,7 @@
 										"comments",
 										"tracks",
 										"track",
-										"fb27a878-20e1-4c47-8330-b907b76619d2"
+										"f4728950-9685-4bb1-8499-af0710b0c780"
 									]
 								}
 							},
@@ -1465,7 +1512,7 @@
 					"name": "Album",
 					"item": [
 						{
-							"name": "Album Comments",
+							"name": "Comments By Album Id",
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -1480,13 +1527,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{BASE_URL_API}}/comments/album",
+									"raw": "{{BASE_URL_API}}/comments/album/3951e8b7-ab33-47f1-9ff4-9b9aa467a212",
 									"host": [
 										"{{BASE_URL_API}}"
 									],
 									"path": [
 										"comments",
-										"album"
+										"album",
+										"3951e8b7-ab33-47f1-9ff4-9b9aa467a212"
 									],
 									"query": [
 										{
@@ -1680,7 +1728,7 @@
 					"name": "Artist",
 					"item": [
 						{
-							"name": "Artist Comments",
+							"name": "Comments By Artist Id",
 							"request": {
 								"auth": {
 									"type": "bearer",
@@ -1695,13 +1743,14 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": "{{BASE_URL_API}}/comments/artist",
+									"raw": "{{BASE_URL_API}}/comments/artist/d1f3a0a1-3160-4cab-b643-fbd4a9884edf",
 									"host": [
 										"{{BASE_URL_API}}"
 									],
 									"path": [
 										"comments",
-										"artist"
+										"artist",
+										"d1f3a0a1-3160-4cab-b643-fbd4a9884edf"
 									],
 									"query": [
 										{
@@ -1972,6 +2021,171 @@
 			]
 		},
 		{
+			"name": "Favorite",
+			"item": [
+				{
+					"name": "Track",
+					"item": [
+						{
+							"name": "Toggle",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/favorites/track/f4728950-9685-4bb1-8499-af0710b0c780",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"favorites",
+										"track",
+										"f4728950-9685-4bb1-8499-af0710b0c780"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Album",
+					"item": [
+						{
+							"name": "Toggle",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/favorites/track/f4728950-9685-4bb1-8499-af0710b0c780",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"favorites",
+										"track",
+										"f4728950-9685-4bb1-8499-af0710b0c780"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "Artist",
+					"item": [
+						{
+							"name": "Toggle",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": [
+										{
+											"key": "token",
+											"value": "{{TOKEN}}",
+											"type": "string"
+										}
+									]
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{BASE_URL_API}}/favorites/track/f4728950-9685-4bb1-8499-af0710b0c780",
+									"host": [
+										"{{BASE_URL_API}}"
+									],
+									"path": [
+										"favorites",
+										"track",
+										"f4728950-9685-4bb1-8499-af0710b0c780"
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "User Favorites",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "{{TOKEN}}",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/favorites/user/owns",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"favorites",
+								"user",
+								"owns"
+							],
+							"query": [
+								{
+									"key": "",
+									"value": null,
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Gender",
+			"item": [
+				{
+					"name": "New Request",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL_API}}/genders",
+							"host": [
+								"{{BASE_URL_API}}"
+							],
+							"path": [
+								"genders"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
 			"name": "Health",
 			"request": {
 				"method": "GET",
@@ -2022,7 +2236,7 @@
 	"variable": [
 		{
 			"key": "BASE_URL_API",
-			"value": "http://192.168.1.14:3333/api",
+			"value": "http://192.168.1.30:3333/api",
 			"type": "string"
 		},
 		{

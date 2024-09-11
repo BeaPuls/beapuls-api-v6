@@ -65,7 +65,7 @@ export default class ProfileController {
           currentProfile.dateOfBirth = data.dateOfBirth
           currentProfile.description = data.description
           currentProfile.genderId = data.genderId
-          currentProfile.avatar = 'profile.png'
+          currentProfile.avatar = 'uploads/profile.png'
           await currentProfile.save()
 
           profileResult = currentProfile

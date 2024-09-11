@@ -1,5 +1,5 @@
 import { BaseSeeder } from '@adonisjs/lucid/seeders'
-import Album from '#profile/models/album'
+import Album from '#profile/models/profile_album'
 import User from '#user/models/user'
 import ProviderType, { ProviderTypeName } from '#auth/models/provider_type'
 import Profile from '#profile/models/profile'
