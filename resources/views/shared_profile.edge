@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Profil Partagé</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#9358AF',
+                        secondary: '#D4A5B1',
+                        tertiary: '#431c08',
+                        accent: '#C28480',
+                        background: '#f5f5f5',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .swiper-pagination {
+            position: static;
+        }
+        .swiper-pagination-bullet {
+            width: 12px;
+            height: 12px;
+            background-color: #D4A5B1;
+            opacity: 0.5;
+        }
+        .swiper-pagination-bullet-active {
+            background-color: #9358AF;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="bg-background text-tertiary">
+    <div class="container mx-auto px-4 py-8">
+        <div class="bg-white shadow-md rounded-lg overflow-hidden">
+            <div class="p-6">
+                <div class="flex flex-col items-center mb-6">
+                    <img src="{{ await driveUrl(profile.avatar) }}" alt="Avatar" class="w-24 h-24 rounded-full mb-4 border-4 border-primary">
+                    <div class="text-center">
+                        <h1 class="text-2xl font-bold text-primary">{{ profile.username }}</h1>
+                        <p class="text-secondary">Né(e) le {{ profile.dateOfBirth.toFormat('dd/MM/yyyy') }}</p>
+                    </div>
+                </div>
+
+                @if(profile.description)
+                    <p class="text-tertiary mb-6 text-center italic">{{ profile.description }}</p>
+                @endif
+
+                @if(profile.tops.tracks && profile.tops.tracks.length > 0)
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-3 text-primary">Top 5 Morceaux</h2>
+                        <div class="swiper tracksSwiper">
+                            <div class="swiper-wrapper">
+                                @each(track in profile.tops.tracks)
+                                    <div class="swiper-slide">
+                                        <div class="flex flex-col items-center p-4 bg-secondary bg-opacity-20 rounded-lg">
+                                            <img src="{{ track.providerItemImage }}" alt="{{ track.name }}" class="w-32 h-32 mb-3 rounded-md shadow-md">
+                                            <div class="text-center">
+                                                <p class="font-bold">{{ track.name }}</p>
+                                                <p class="text-sm text-accent">{{ track.artistName }}</p>
+                                                @if(track.albumName)
+                                                    <p class="text-xs text-tertiary">{{ track.albumName }}</p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                    </div>
+                                @end
+                            </div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+                @endif
+
+                @if(profile.tops.artists && profile.tops.artists.length > 0)
+                    <div class="mb-6">
+                        <h2 class="text-xl font-semibold mb-3 text-primary">Top 5 Artistes</h2>
+                        <div class="swiper artistsSwiper">
+                            <div class="swiper-wrapper">
+                                @each(artist in profile.tops.artists)
+                                    <div class="swiper-slide">
+                                        <div class="flex flex-col items-center p-4 bg-secondary bg-opacity-20 rounded-lg">
+                                            <img src="{{ artist.providerItemImage }}" alt="{{ artist.name }}" class="w-32 h-32 rounded-full mb-3 border-2 border-accent">
+                                            <div class="text-center">
+                                                <p class="font-bold">{{ artist.name }}</p>
+                                                <p class="text-sm text-accent">{{ artist.followers }} followers</p>
+                                                <p class="text-xs text-tertiary">Popularité : {{ artist.popularity }}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @end
+                            </div>
+                            <div class="swiper-pagination"></div>
+                        </div>
+                    </div>
+                @endif
+
+                <div class="mb-6">
+                    <h2 class="text-xl font-semibold mb-3 text-primary">Commentaires</h2>
+                    <div class="filters flex justify-center space-x-2 mb-4 overflow-x-hidden md:overflow-x-visible">
+                        <div class="flex space-x-2 overflow-x-auto md:overflow-x-visible pb-2 md:pb-0">
+                            <button onclick="filterCommentsByType('all')" class="px-4 py-2 rounded-full bg-primary text-white hover:bg-primary-dark transition-colors duration-300 whitespace-nowrap">Tous</button>
+                            <button onclick="filterCommentsByType('track')" class="px-4 py-2 rounded-full bg-secondary text-white hover:bg-secondary-dark transition-colors duration-300 whitespace-nowrap">Morceaux</button>
+                            <button onclick="filterCommentsByType('artist')" class="px-4 py-2 rounded-full bg-accent text-white hover:bg-accent-dark transition-colors duration-300 whitespace-nowrap">Artistes</button>
+                            <button onclick="filterCommentsByType('album')" class="px-4 py-2 rounded-full bg-tertiary text-white hover:bg-tertiary-dark transition-colors duration-300 whitespace-nowrap">Albums</button>
+                        </div>
+                    </div>
+                    @if(profile.comments && profile.comments.length > 0)
+                        <div class="commentsSection h-96 overflow-y-auto">
+                            @each(comment in profile.comments)
+                                <div class="comment mb-4" data-type="{{ comment.type }}">
+                                    <div class="flex items-center mb-2">
+                                        <img src="{{ comment.comment.entity.image }}" alt="{{ comment.comment.entity.name }}" class="w-10 h-10 rounded-full mr-3">
+                                        <div>
+                                            <p class="font-semibold">{{ comment.comment.entity.name }}</p>
+                                            {{--  <p class="text-xs text-tertiary">Le {{ DateTime.fromISO(comment.comment.createdAt).toFormat('dd/MM/yyyy à HH:mm') }}</p>  --}}
+                                        </div>
+                                    </div>
+                                    <p class="mb-2">{{ comment.comment.comment }}</p>
+                                    <div class="flex items-center text-sm">
+                                        <span class="mr-3">👍 {{ comment.comment.upVote }}</span>
+                                        <span>👎 {{ comment.comment.downVote }}</span>
+                                    </div>
+                                </div>
+                            @end
+                        </div>
+                    @endif
+                </div>
+
+                <script>
+                    function filterCommentsByType(type) {
+                        const allComments = document.querySelectorAll('.comment');
+                        allComments.forEach(comment => {
+                            if (type === 'all') {
+                                comment.style.display = 'block';
+                            } else {
+                                const commentType = comment.dataset.type;
+                                if (commentType === type) {
+                                    comment.style.display = 'block';
+                                } else {
+                                    comment.style.display = 'none';
+                                }
+                            }
+                        });
+                    }
+                </script>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        new Swiper('.tracksSwiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                },
+                768: {
+                    slidesPerView: 3,
+                },
+            }
+        });
+
+        new Swiper('.artistsSwiper', {
+            slidesPerView: 1,
+            spaceBetween: 20,
+            pagination: {
+                el: '.swiper-pagination',
+                clickable: true,
+            },
+            breakpoints: {
+                640: {
+                    slidesPerView: 2,
+                },
+                768: {
+                    slidesPerView: 3,
+                },
+            }
+        });
+    </script>
+</body>
+</html>

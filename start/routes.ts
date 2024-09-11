@@ -219,3 +219,7 @@ router
       )
   })
   .prefix('api')
+
+router.group(() => {
+  router.get('profile/shared/:id', [ProfileController, 'getSharedProfile'])
+})

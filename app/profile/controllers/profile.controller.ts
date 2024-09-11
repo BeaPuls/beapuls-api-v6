@@ -11,11 +11,15 @@ import User from '#user/models/user'
 import { cuid } from '@adonisjs/core/helpers'
 import drive from '@adonisjs/drive/services/main'
 import ProfileService from '#profile/services/profile.service'
-import console from 'node:console'
+import { CommentService } from '#comment/services/comment.service'
+import env from '#start/env'
 
 @inject()
 export default class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(
+    private readonly profileService: ProfileService,
+    private readonly commentService: CommentService
+  ) {}
 
   private async serializeUserInfo(user: User, profile: Profile, tops: {}) {
     return {
@@ -25,7 +29,21 @@ export default class ProfileController {
       dateOfBirth: profile.dateOfBirth,
       description: profile.description,
       genderId: profile.genderId,
+      sharedLink: env.get('SHARED_PROFILE_URL') + profile.id,
       tops: tops,
+    }
+  }
+
+  private async serializeSharedProfileInfo(profile: Profile, tops: {}, comments: {}) {
+    return {
+      id: profile.id,
+      username: profile.username,
+      avatar: profile.avatar,
+      dateOfBirth: profile.dateOfBirth,
+      description: profile.description,
+      genderId: profile.genderId,
+      tops: tops,
+      comments: comments,
     }
   }
 
@@ -49,6 +67,18 @@ export default class ProfileController {
     }
   }
 
+  async getSharedProfile({ request, view }: HttpContext) {
+    const { id } = request.params()
+    const profile = await Profile.query().where('id', id).first()
+    if (!profile) {
+      throw new NotFoundException()
+    }
+    const tops = await this.profileService.getProfileTops(profile.id)
+    const comments = await this.commentService.getLastUserComments(profile.userId)
+    const profileData = await this.serializeSharedProfileInfo(profile, tops, comments)
+    return view.render('shared_profile', { profile: profileData })
+  }
+
   async getUserProfile({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const profile = await Profile.query().where('user_id', user.id).first()
@@ -56,7 +86,6 @@ export default class ProfileController {
       throw new NotFoundException()
     }
     const tops = await this.profileService.getProfileTops(profile.id)
-
     const profileData = await this.serializeUserInfo(user, profile, tops)
     return ApiResponse.response({ response }, profileData, 'Profile fetched successfully', 200)
   }
