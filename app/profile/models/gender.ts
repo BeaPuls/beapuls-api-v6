@@ -3,9 +3,9 @@ import { DateTime } from 'luxon'
 import { randomUUID } from 'node:crypto'
 
 export enum GenderName {
-  MALE = 'Male',
-  FEMALE = 'Female',
-  OTHER = 'Other',
+  MALE = 'Homme',
+  FEMALE = 'Femme',
+  OTHER = 'Autre',
 }
 export default class Gender extends BaseModel {
   static selfAssignPrimaryKey = true

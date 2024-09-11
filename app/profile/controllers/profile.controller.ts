@@ -11,6 +11,7 @@ import User from '#user/models/user'
 import { cuid } from '@adonisjs/core/helpers'
 import drive from '@adonisjs/drive/services/main'
 import ProfileService from '#profile/services/profile.service'
+import console from 'node:console'
 
 @inject()
 export default class ProfileController {
@@ -21,7 +22,6 @@ export default class ProfileController {
       id: profile.id,
       userId: user.id,
       username: profile.username,
-      avatar: profile.avatar ? await drive.use().getUrl(profile.avatar) : null,
       dateOfBirth: profile.dateOfBirth,
       description: profile.description,
       genderId: profile.genderId,
@@ -39,13 +39,22 @@ export default class ProfileController {
     }
   }
 
+  private async serializeAvatarInfo(avatar: any) {
+    return {
+      avatar: avatar
+        ? avatar.startsWith('http')
+          ? avatar
+          : await drive.use().getUrl(avatar)
+        : null,
+    }
+  }
+
   async getUserProfile({ auth, response }: HttpContext) {
     const user = auth.getUserOrFail()
     const profile = await Profile.query().where('user_id', user.id).first()
     if (!profile) {
       throw new NotFoundException()
     }
-
     const tops = await this.profileService.getProfileTops(profile.id)
 
     const profileData = await this.serializeUserInfo(user, profile, tops)
@@ -65,7 +74,6 @@ export default class ProfileController {
           currentProfile.dateOfBirth = data.dateOfBirth
           currentProfile.description = data.description
           currentProfile.genderId = data.genderId
-          currentProfile.avatar = 'uploads/profile.png'
           await currentProfile.save()
 
           profileResult = currentProfile
@@ -112,20 +120,17 @@ export default class ProfileController {
   async uploadUserAvatar({ auth, request, response }: HttpContext): Promise<void> {
     const user = auth.getUserOrFail()
     const { avatar } = await request.validateUsing(uploadProfileAvatarValidator)
-    await this.saveUserAvatarImage(user, avatar)
-    const profile = await Profile.query().where('user_id', user.id).first()
-    if (!profile) {
-      throw new NotFoundException(ErrorMessage.PROFILE_NOT_FOUND)
-    }
+    console.log(avatar)
+    const isSaved = await this.saveUserAvatarImage(user, avatar)
     ApiResponse.response(
       { response },
-      await this.serializeUserInfo(user, profile),
+      await this.serializeAvatarInfo(isSaved),
       'Profile avatar uploaded successfully',
       200
     )
   }
 
-  private async saveUserAvatarImage(user: User, file: any): Promise<void> {
+  private async saveUserAvatarImage(user: User, file: any): Promise<boolean> {
     // const fileName = this.buildAvatarFileName(user, file)
     const fileName = `${cuid()}.${file.extname}`
     const key = `uploads/${fileName}`
@@ -141,6 +146,8 @@ export default class ProfileController {
     )
 
     profile.save()
+
+    return profile ? key : false
   }
 
   async getUserAvatar({ auth, response }: HttpContext): Promise<void> {

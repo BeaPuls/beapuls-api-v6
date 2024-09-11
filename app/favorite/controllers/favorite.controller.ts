@@ -68,9 +68,6 @@ export default class FavoriteController {
         .sort((a, b) => b.favorite.createdAt - a.favorite.createdAt)
         .slice(0, 10)
 
-      if (sortedFavorites.length === 0) {
-        throw new NotFoundException('Aucun favori trouvé pour cet utilisateur')
-      }
       return ApiResponse.response(
         { response },
         sortedFavorites,

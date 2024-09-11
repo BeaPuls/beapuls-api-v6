@@ -45,7 +45,7 @@ export default class CommentController {
   }
   async getLastUserComments({ auth, request, response }: HttpContext) {
     const user = await auth.getUserOrFail()
-    const { limit = 10 } = request.qs()
+    const { limit = 50 } = request.qs()
     try {
       const [trackComments, artistComments, albumComments] = await Promise.all([
         this.trackCommentService.getLastUserComments(user.id, limit),
@@ -75,9 +75,6 @@ export default class CommentController {
         .sort((a, b) => b.comment.createdAt - a.comment.createdAt)
         .slice(0, 10)
 
-      if (sortedComments.length === 0) {
-        throw new NotFoundException('No comments found for this user')
-      }
       return ApiResponse.response(
         { response },
         sortedComments,
