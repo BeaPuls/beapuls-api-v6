@@ -165,4 +165,12 @@ export default class ProfileController {
     const url = await drive.use().getUrl(avatar)
     ApiResponse.response({ response }, url, 'Profile avatar fetched successfully', 200)
   }
+
+  async getProfileTops({ auth, response }: HttpContext) {
+    const user = await auth.getUserOrFail()
+    const profile = await Profile.query().where('user_id', user.id).first()
+    const tops = await this.profileService.getProfileTops(profile.id)
+
+    return ApiResponse.response({ response }, tops, 'Profile tops fetched successfully', 200)
+  }
 }
