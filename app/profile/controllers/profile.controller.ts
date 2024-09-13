@@ -187,10 +187,7 @@ export default class ProfileController {
       throw new NotFoundException(ErrorMessage.PROFILE_NOT_FOUND)
     }
 
-    const avatar = profile?.avatar
-    if (!avatar) {
-      throw new NotFoundException(ErrorMessage.PROFILE_AVATAR_NOT_FOUND)
-    }
+    const avatar = profile?.avatar ?? 'uploads/profile.png'
     const url = avatar.startsWith('http') ? avatar : await drive.use().getUrl(avatar)
     return ApiResponse.response({ response }, url, 'Profile avatar fetched successfully', 200)
   }
